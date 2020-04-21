@@ -348,3 +348,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/OTP_Guide_Auto_Create/Qt5Cored.dll
+/OTP_Guide_Auto_Create/Qt5Guid.dll
+/OTP_Guide_Auto_Create/Qt5Widgetsd.dll
+/OTP_Guide_Auto_Create/platforms
