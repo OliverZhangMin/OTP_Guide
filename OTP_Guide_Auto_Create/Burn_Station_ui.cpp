@@ -4,6 +4,7 @@
 
 Burn_Station_ui::Burn_Station_ui(ExcelProp& prop, QWidget *parent):Qt_Excel(prop)
 {
+	HideTextDesc();
 	boost::assign::push_back(m_vecHeaderLabels)("烧录段起始地址")("烧录段结束地址");
 	if (prop.m_vecHeaderLabels.size() == 0)
 		prop.m_vecHeaderLabels = m_vecHeaderLabels;

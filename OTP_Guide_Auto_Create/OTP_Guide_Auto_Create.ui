@@ -14,22 +14,18 @@
    <string>OTP_Guide_Auto_Create</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTabWidget" name="m_tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>20</y>
-      <width>791</width>
-      <height>621</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>-1</number>
-    </property>
-    <property name="movable">
-     <bool>true</bool>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="m_tabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

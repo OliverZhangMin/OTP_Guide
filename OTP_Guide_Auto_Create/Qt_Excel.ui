@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
-    <height>679</height>
+    <width>1266</width>
+    <height>1099</height>
    </rect>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::TabFocus</enum>
+   <enum>Qt::ClickFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Qt_Excel</string>
@@ -29,11 +29,26 @@
    </item>
    <item>
     <widget class="QTableWidget" name="m_tableWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>700</height>
+      </size>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="defaultDropAction">
+      <enum>Qt::IgnoreAction</enum>
      </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
@@ -44,6 +59,44 @@
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectItems</enum>
      </property>
+     <property name="textElideMode">
+      <enum>Qt::ElideMiddle</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="m_label_desc">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>文本描述</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="m_textEdit_remark">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>9999999</width>
+       <height>9999999</height>
+      </size>
+     </property>
     </widget>
    </item>
   </layout>
@@ -51,38 +104,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections>
-  <connection>
-   <sender>m_tableWidget</sender>
-   <signal>itemChanged(QTableWidgetItem*)</signal>
-   <receiver>Qt_Excel</receiver>
-   <slot>callback_itemChanged(QTableWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>110</x>
-     <y>295</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>150</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_tableWidget</sender>
-   <signal>itemSelectionChanged()</signal>
-   <receiver>Qt_Excel</receiver>
-   <slot>callback_itemSelectionChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>80</x>
-     <y>242</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>8</x>
-     <y>304</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>m_textEdit</sender>
    <signal>textChanged()</signal>
@@ -99,10 +120,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_tableWidget</sender>
+   <signal>itemClicked(QTableWidgetItem*)</signal>
+   <receiver>Qt_Excel</receiver>
+   <slot>callback_itemClicked(QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>376</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>callback_itemChanged(QTableWidgetItem*)</slot>
+  <slot>callback_itemClicked(QTableWidgetItem*)</slot>
   <slot>callback_textChanged()</slot>
-  <slot>callback_itemSelectionChanged()</slot>
  </slots>
 </ui>

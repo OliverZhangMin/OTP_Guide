@@ -19,7 +19,7 @@ Qt_Excel::Qt_Excel(ExcelProp& out_excel,QWidget *parent)
 	/*setFocusPolicy(Qt::StrongFocus);
 	this->grabKeyboard();*/
 
-	//ShowExcel();
+	ShowExcel();
 }
 
 Qt_Excel::~Qt_Excel()
@@ -61,16 +61,7 @@ void Qt_Excel::keyPressEvent(QKeyEvent * k)
 	}
 	if (k->key() == Qt::Key_Delete)
 	{
-	
-		int count = m_SelectItems.count();	
-		if (count == 0)
-		{
-			string str_log = (boost::format("只能选中一行进行删除")).str();
-			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
-			return;
-		}
-		int row = m_SelectItems[0]->row();
-		m_outExcel.m_vecData.erase(m_outExcel.m_vecData.begin() + row);
+		m_outExcel.m_vecData.erase(m_outExcel.m_vecData.begin() + m_iLastSelectRow);
 		ShowExcel();
 		return;
 	}
@@ -80,7 +71,7 @@ void Qt_Excel::keyPressEvent(QKeyEvent * k)
 void Qt_Excel::ShowExcel()
 {
 	disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.m_tableWidget, SLOT(resizeRowsToContents()));
-	//disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChange(QTableWidgetItem*)));
+	//disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChanged(QTableWidgetItem*)));
 	ui.m_tableWidget->clearSpans();		//清空所有的合并
 	ui.m_tableWidget->clear();
 	ui.m_tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
@@ -107,11 +98,25 @@ void Qt_Excel::ShowExcel()
 
 	connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.m_tableWidget, SLOT(resizeRowsToContents()));
 	//ui.m_tableWidget->resizeRowsToContents();
-	//connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChange(QTableWidgetItem*)));
+	//connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChanged(QTableWidgetItem*)));
 }
 
-void Qt_Excel::callback_itemChanged(QTableWidgetItem* item)
+void Qt_Excel::HideTextDesc()
 {
+	ui.m_textEdit_remark->setMaximumSize(QSize(0, 0));
+	ui.m_label_desc->setMaximumSize(QSize(0, 0));
+}
+
+void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
+{
+	m_iLastSelectRow = item->row();
+	m_iLastSelectCol = item->column();
+	//cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
+	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
+	ui.m_textEdit->setFocus();
+	QTextCursor cursor = ui.m_textEdit->textCursor();
+	cursor.movePosition(QTextCursor::End);
+	ui.m_textEdit->setTextCursor(cursor);
 }
 
 void Qt_Excel::callback_textChanged()
@@ -127,16 +132,29 @@ void Qt_Excel::callback_textChanged()
 	m_outExcel.m_vecData[m_iLastSelectRow][m_iLastSelectCol] = str.toLocal8Bit().data();
 }
 
-void Qt_Excel::callback_itemSelectionChanged()
-{
-	m_SelectItems = ui.m_tableWidget->selectedItems();
-	if (m_SelectItems.size() == 0)
-		return;
-	m_iLastSelectRow = m_SelectItems[0]->row();
-	m_iLastSelectCol = m_SelectItems[0]->column();
-	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
-	ui.m_textEdit->setFocus();
-	QTextCursor cursor = ui.m_textEdit->textCursor();
-	cursor.movePosition(QTextCursor::End);
-	ui.m_textEdit->setTextCursor(cursor);
-}
+//void Qt_Excel::callback_itemSelectionChanged()
+//{
+//	//m_SelectItems = ui.m_tableWidget->selectedItems();
+//	//if (m_SelectItems.size() == 0)
+//	//	return;
+//	//m_iLastSelectRow = m_SelectItems[0]->row();
+//	//m_iLastSelectCol = m_SelectItems[0]->column();
+//	//cout << "row--:" << m_iLastSelectRow << ",col-- = " << m_iLastSelectCol << endl;
+//	//ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
+//	////ui.m_textEdit->setFocus();
+//	//QTextCursor cursor = ui.m_textEdit->textCursor();
+//	//cursor.movePosition(QTextCursor::End);
+//	//ui.m_textEdit->setTextCursor(cursor);
+//}
+
+//void Qt_Excel::callback_cellClicked(int row, int col)
+//{
+//	m_iLastSelectRow = row;
+//	m_iLastSelectCol = col;
+//	cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
+//	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
+//	ui.m_textEdit->setFocus();
+//	QTextCursor cursor = ui.m_textEdit->textCursor();
+//	cursor.movePosition(QTextCursor::End);
+//	ui.m_textEdit->setTextCursor(cursor);
+//}

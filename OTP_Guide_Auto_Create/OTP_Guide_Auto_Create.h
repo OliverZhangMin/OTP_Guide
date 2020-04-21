@@ -5,6 +5,7 @@
 #include "EEPROM_Addr_Map.h"
 #include "EEPROM_INIT.h"
 #include "ProjectInformation_UI.h"
+#include "TestItemContainer_UI.h"
 #include <memory>
 
 struct OTPGuideInfo;
@@ -21,6 +22,7 @@ private:
 	std::shared_ptr<ProjectInformation_UI> m_ProjectInformation;
 	std::shared_ptr<EEPROM_INIT> m_pEEPROM_init;
 	std::shared_ptr<EEPROM_Addr_Map> m_pEEPROM_addr_Map;
+	std::shared_ptr<TestItemContainer_UI> m_pBurnTestItem;
 	OTPGuideInfo m_GuideInfo;
 private slots:
 	void callback_currentChanged(int);

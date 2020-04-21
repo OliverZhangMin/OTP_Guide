@@ -49,6 +49,12 @@
     <ClCompile Include="ProjectInformation_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Burn_TestItem_UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestItemContainer_UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OTP_Guide_Auto_Create.h">
@@ -69,6 +75,12 @@
     <QtMoc Include="ProjectInformation_UI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Burn_TestItem_UI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TestItemContainer_UI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="OTP_Guide_Auto_Create.ui">
@@ -83,6 +95,12 @@
     <QtUic Include="Qt_Excel.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="Burn_TestItem_UI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="TestItemContainer_UI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="OTP_Guide_Auto_Create.qrc">
@@ -91,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OTPGuideDataStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

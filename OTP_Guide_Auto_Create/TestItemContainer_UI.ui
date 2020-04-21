@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TestItemContainer_UI</class>
+ <widget class="QWidget" name="TestItemContainer_UI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>975</width>
+    <height>922</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TestItemContainer_UI</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="m_tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_tabWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>TestItemContainer_UI</receiver>
+   <slot>callback_customContextMenuRequested(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>168</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>callback_customContextMenuRequested(QPoint)</slot>
+ </slots>
+</ui>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Burn_TestItem_UI</class>
+ <widget class="QWidget" name="Burn_TestItem_UI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>834</height>
+   </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>QT_ItemInfo</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="m_lineEditSectionName">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>-&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="m_UserSlectlistWidget">
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="m_ImglistWidget">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="m_tabWidget">
+     <property name="minimumSize">
+      <size>
+       <width>650</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="movable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_UserSlectlistWidget</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>Burn_TestItem_UI</receiver>
+   <slot>callback_doubleClick(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>107</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>7</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Burn_TestItem_UI</receiver>
+   <slot>callback_addClick()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>309</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_tabWidget</sender>
+   <signal>tabBarClicked(int)</signal>
+   <receiver>Burn_TestItem_UI</receiver>
+   <slot>callback_tabBarClicked(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>626</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>861</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>callback_doubleClick(QModelIndex)</slot>
+  <slot>callback_addClick()</slot>
+  <slot>callback_tabBarClicked(int)</slot>
+ </slots>
+</ui>

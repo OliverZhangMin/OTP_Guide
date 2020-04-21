@@ -40,8 +40,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>../include;D:\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\boost_1_58_0_MSVC-14.0_static\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\opencv-3.3.0-soure\build\include;../include;D:\boost_1_70_0;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\boost_1_58_0_MSVC-14.0_static\lib;D:\opencv_3.3.0_VS2015\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
@@ -65,12 +65,13 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalOptions>-Zm110 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-Zm122 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opencv_world330d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,6 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Burn_Station_ui.cpp" />
+    <ClCompile Include="Burn_TestItem_UI.cpp" />
     <ClCompile Include="EEPROM_Addr_Map.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -105,15 +107,18 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestItemContainer_UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OTP_Guide_Auto_Create.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="Burn_TestItem_UI.ui" />
     <QtUic Include="EEPROM_Addr_Map.ui" />
     <QtUic Include="EEPROM_INIT.ui" />
     <QtUic Include="OTP_Guide_Auto_Create.ui" />
     <QtUic Include="Qt_Excel.ui" />
+    <QtUic Include="TestItemContainer_UI.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="OTP_Guide_Auto_Create.qrc" />
@@ -125,9 +130,12 @@
     <QtMoc Include="EEPROM_INIT.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="TestItemContainer_UI.h" />
     <QtMoc Include="Burn_Station_ui.h" />
     <QtMoc Include="Qt_Excel.h" />
     <QtMoc Include="ProjectInformation_UI.h" />
+    <ClInclude Include="..\include\OTPGuideDataStruct.h" />
+    <QtMoc Include="Burn_TestItem_UI.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
