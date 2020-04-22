@@ -55,6 +55,9 @@
     <ClCompile Include="TestItemContainer_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BurnRule_UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OTP_Guide_Auto_Create.h">
@@ -81,6 +84,9 @@
     <QtMoc Include="TestItemContainer_UI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="BurnRule_UI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="OTP_Guide_Auto_Create.ui">
@@ -99,6 +105,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="TestItemContainer_UI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="BurnRule_UI.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

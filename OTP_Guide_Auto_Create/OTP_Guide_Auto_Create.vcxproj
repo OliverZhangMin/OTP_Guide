@@ -65,7 +65,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalOptions>-Zm122 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-Zm133 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,6 +88,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BurnRule_UI.cpp" />
     <ClCompile Include="Burn_Station_ui.cpp" />
     <ClCompile Include="Burn_TestItem_UI.cpp" />
     <ClCompile Include="EEPROM_Addr_Map.cpp">
@@ -113,6 +114,7 @@
     <QtMoc Include="OTP_Guide_Auto_Create.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="BurnRule_UI.ui" />
     <QtUic Include="Burn_TestItem_UI.ui" />
     <QtUic Include="EEPROM_Addr_Map.ui" />
     <QtUic Include="EEPROM_INIT.ui" />
@@ -136,6 +138,7 @@
     <QtMoc Include="ProjectInformation_UI.h" />
     <ClInclude Include="..\include\OTPGuideDataStruct.h" />
     <QtMoc Include="Burn_TestItem_UI.h" />
+    <QtMoc Include="BurnRule_UI.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

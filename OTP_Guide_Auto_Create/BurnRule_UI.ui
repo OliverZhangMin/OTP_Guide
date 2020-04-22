@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BurnRule_UI</class>
+ <widget class="QMainWindow" name="BurnRule_UI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1445</width>
+    <height>982</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>BurnRule_UI</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QTableWidget" name="m_BurnRuleTable">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>10</y>
+      <width>491</width>
+      <height>491</height>
+     </rect>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SingleSelection</enum>
+    </property>
+    <column>
+     <property name="text">
+      <string>地址</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>烧录长度</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>烧录数据</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>拆分类型</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QListWidget" name="m_DataTypelistWidget">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>70</y>
+      <width>311</width>
+      <height>651</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="m_CalSumRangeTable">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>530</y>
+      <width>491</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="m_lineEditDataFilter">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>40</y>
+      <width>171</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="m_DataSourceSplitlist">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>50</y>
+      <width>231</width>
+      <height>531</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="m_ChecksumAddrTable">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>720</y>
+      <width>491</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1445</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_lineEditDataFilter</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_DataFilterTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>918</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1276</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_DataTypelistWidget</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_DataTypeClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1110</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1291</x>
+     <y>219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_DataTypelistWidget</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_DataTypeCurrentTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1100</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1215</x>
+     <y>344</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_DataSourceSplitlist</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_DataSourceCurrentTextChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>692</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>723</x>
+     <y>49</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_BurnRuleTable</sender>
+   <signal>currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_BurnRlueCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>487</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>63</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_CalSumRangeTable</sender>
+   <signal>currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_ChecksumRangeCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>421</x>
+     <y>649</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>42</x>
+     <y>640</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_ChecksumAddrTable</sender>
+   <signal>currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</signal>
+   <receiver>BurnRule_UI</receiver>
+   <slot>callback_ChecksumAddrCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>467</x>
+     <y>828</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>818</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>callback_BurnRuleitemPressed(QTableWidgetItem*)</slot>
+  <slot>callback_DataFilterTextChanged(QString)</slot>
+  <slot>callback_DataTypeCurrentTextChanged(QString)</slot>
+  <slot>callback_DataSourceCurrentTextChanged(QString)</slot>
+  <slot>callback_BurnRlueCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+  <slot>callback_BurnRuleItemChanged(QTableWidgetItem*)</slot>
+  <slot>callback_ChecksumRangeCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+  <slot>callback_ChecksumAddrCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+ </slots>
+</ui>

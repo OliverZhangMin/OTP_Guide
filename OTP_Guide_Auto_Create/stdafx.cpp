@@ -10,6 +10,25 @@ bool IsHex(const string& str)
 		return true;
 }
 
+bool IsInteger(const string& str)
+{
+	boost::regex reg("[^0123456789]");//ÅÐ¶Ï·Ç·¨µÄ×Ö·û
+	boost::sregex_iterator it_begin(str.begin(), str.end(), reg);
+	boost::sregex_iterator it_end;
+	for (auto it = it_begin; it != it_end; it++)
+		return false;
+
+	return true;
+}
+
+bool IsFrontBy(const string& src, const string& reg)
+{
+	if (boost::starts_with(src, reg))
+		return true;
+	else
+		return false;
+}
+
 wstring string2wstring(string str)
 {
 	wstring result;

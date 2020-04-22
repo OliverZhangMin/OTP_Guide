@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "TestItemContainer_UI.h"
 #include "Burn_TestItem_UI.h"
+#include "BurnRule_UI.h"
 #include <QMenu>
 #include <QInputDialog>
+#include <qtabwidget.h>
 
 TestItemContainer_UI::TestItemContainer_UI(OTPGuideInfo& guide_info,QWidget *parent)
 	: QWidget(parent), m_guideInfo(guide_info)
@@ -33,7 +35,11 @@ void TestItemContainer_UI::TestItemInsert()
 		m_guideInfo.m_vecBurnItems.push_back(BurnItem());
 		auto& item = *(m_guideInfo.m_vecBurnItems.rbegin());
 		item.title = text.toLocal8Bit().data();
-		Burn_TestItem_UI* p = new Burn_TestItem_UI(item);
+		Burn_TestItem_UI* p_desc = new Burn_TestItem_UI(item);
+		BurnRule_UI* p_rule = new BurnRule_UI;
+		QTabWidget* p = new QTabWidget;
+		p->addTab(p_desc, QString::fromLocal8Bit("ÃèÊöÏ¸½Ú"));
+		p->addTab(p_rule, QString::fromLocal8Bit("ÉÕÂ¼¹æÔò"));
 		ui.m_tabWidget->addTab(p, text);
 	}
 	else
