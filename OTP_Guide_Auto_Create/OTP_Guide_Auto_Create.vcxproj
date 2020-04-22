@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>D:\opencv-3.3.0-soure\build\include;../include;D:\boost_1_70_0;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\boost_1_58_0_MSVC-14.0_static\lib;D:\opencv_3.3.0_VS2015\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\boost_1_70_0_MSVC-14.0_static\lib;D:\opencv_3.3.0_VS2015\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
