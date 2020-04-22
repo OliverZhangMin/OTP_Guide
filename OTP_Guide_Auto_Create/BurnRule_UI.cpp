@@ -40,6 +40,10 @@ BurnRule_UI::BurnRule_UI(QWidget *parent)
 
 	//boost::filesystem::path DataSourcePath(boost::filesystem::current_path());
 	//DataSourcePath = DataSourcePath.parent_path().parent_path().append("DataSource.ini");
+	ui.m_BurnRuleTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	ui.m_CalSumRangeTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	ui.m_ChecksumAddrTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 	boost::assign::push_back(m_vecBurnRuleHeaderLabels)("地址")("烧录长度")("烧录数据")("拆分类型");
 	boost::assign::push_back(m_vecCheckSumRangeHeaderLabels)("计算CheckSum开始地址")("计算CheckSum结束地址")("区间数据来源");
 	boost::assign::push_back(m_vecCheckSumAddrHeaderLabels)("CheckSum填充地址")("CheckSum地址个数")("地址排序")("类型");
