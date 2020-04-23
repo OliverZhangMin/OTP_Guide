@@ -13,7 +13,7 @@ Burn_Station_ui::Burn_Station_ui(ExcelProp& prop, QWidget *parent):Qt_Excel(prop
 
 Burn_Station_ui::~Burn_Station_ui()
 {
-
+	//
 }
 
 void Burn_Station_ui::ShowExcel()
