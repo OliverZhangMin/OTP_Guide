@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>828</width>
-    <height>806</height>
+    <width>1440</width>
+    <height>1055</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -114,8 +114,8 @@
      <rect>
       <x>20</x>
       <y>210</y>
-      <width>591</width>
-      <height>351</height>
+      <width>1081</width>
+      <height>681</height>
      </rect>
     </property>
     <property name="focusPolicy">
@@ -131,8 +131,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>828</width>
-     <height>26</height>
+     <width>1440</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>

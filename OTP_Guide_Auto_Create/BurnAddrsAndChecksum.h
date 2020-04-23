@@ -18,5 +18,6 @@ protected:
 private:
 	Ui::BurnAddrsAndChecksum ui;
 	std::vector<std::vector<std::string>> m_vecBurnAddrs;
-
+private slots:
+	void callback_BurnAddrWidgetItemChanged(QTableWidgetItem*);
 };

@@ -11,7 +11,7 @@ class EEPROM_INIT : public QMainWindow
 public:
 	EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent = Q_NULLPTR);
 	~EEPROM_INIT();
-
+	void UpdataUiByGuideInfo();
 private:
 	Ui::EEPROM_INIT ui;
 	QMenu * m_pBurnStationWidgetMenu = nullptr;

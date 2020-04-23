@@ -6,7 +6,7 @@ BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,QWidget *par
 	: QWidget(parent)
 {
 	ui.setupUi(this);
-
+	ui.m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 BurnAddrsAndChecksum::~BurnAddrsAndChecksum()
@@ -16,9 +16,9 @@ BurnAddrsAndChecksum::~BurnAddrsAndChecksum()
 
 void BurnAddrsAndChecksum::ShowExcel()
 {
-	//disconnect(ui.m_BurnRuleTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_BurnRuleItemChanged(QTableWidgetItem*)));
+	disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_BurnAddrWidgetItemChanged(QTableWidgetItem*)));
 	ui.m_tableWidget->clearSpans();		//清空所有的合并
-	ui.m_tableWidget->clear();
+	ui.m_tableWidget->clearContents();
 	ui.m_tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
 	ui.m_tableWidget->setRowCount(m_vecBurnAddrs.size());
 	ui.m_tableWidget->setColumnCount(2);
@@ -30,8 +30,14 @@ void BurnAddrsAndChecksum::ShowExcel()
 
 	for (int row = 0; row < m_vecBurnAddrs.size(); row++)
 		for (int col = 0; col < 2; col++)
+		{
 			ui.m_tableWidget->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_vecBurnAddrs[row][col].c_str())));
-	//connect(ui.m_BurnRuleTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_BurnRuleItemChanged(QTableWidgetItem*)));
+			if (!IsHex(m_vecBurnAddrs[row][col]))
+				ui.m_tableWidget->item(row, col)->setBackgroundColor(Qt::red);
+			else
+				ui.m_tableWidget->item(row, col)->setBackgroundColor(Qt::green);
+		}
+	connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_BurnAddrWidgetItemChanged(QTableWidgetItem*)));
 }
 
 void BurnAddrsAndChecksum::keyPressEvent(QKeyEvent * k)
@@ -56,4 +62,13 @@ void BurnAddrsAndChecksum::keyPressEvent(QKeyEvent * k)
 			ShowExcel();
 		}
 	}
+}
+
+void BurnAddrsAndChecksum::callback_BurnAddrWidgetItemChanged(QTableWidgetItem* item)
+{
+	int row = item->row();
+	int col = item->column();
+	string m_str = item->text().toLocal8Bit().data();
+	m_vecBurnAddrs[row][col] = m_str;
+	ShowExcel();
 }

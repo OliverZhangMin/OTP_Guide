@@ -46,6 +46,7 @@ void EEPROM_INIT::BurnStationInsert()
 		return;
 	}
 	BurnAddrsAndChecksum* p_burnaddr = new BurnAddrsAndChecksum(m_GuideInfo);
+	ui.m_tabWidget_BurnStation->addTab(p_burnaddr, text);
 
 	/*m_GuideInfo.m_VecBurnStationAddr.push_back(make_pair(text.toLocal8Bit().data(), ExcelProp()));
 	Qt_Excel* p_tmp = new Burn_Station_ui(m_GuideInfo.m_VecBurnStationAddr.rbegin()->second);
@@ -79,4 +80,9 @@ void EEPROM_INIT::callback_textChangedBurnDefaultVal(QString qstr)
 		pal.setColor(ui.m_lineEdit_DefaultBurn->backgroundRole(), Qt::green);
 	}
 	ui.m_lineEdit_DefaultBurn->setPalette(pal);
+}
+
+void EEPROM_INIT::UpdataUiByGuideInfo()
+{
+
 }

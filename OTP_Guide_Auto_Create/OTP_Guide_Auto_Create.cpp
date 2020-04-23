@@ -29,6 +29,10 @@ OTP_Guide_Auto_Create::OTP_Guide_Auto_Create(QWidget *parent)
 void OTP_Guide_Auto_Create::callback_currentChanged(int index)
 {
 	m_ProjectInformation->ShowExcel();
+	if (ui.m_tabWidget->tabText(index) == QString::fromLocal8Bit("init"))
+	{
+
+	}
 }
 
 void OTP_Guide_Auto_Create::callback_GenerateOTPGuide()

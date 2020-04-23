@@ -16,7 +16,6 @@ class OTP_Guide_Auto_Create : public QMainWindow
 
 public:
 	OTP_Guide_Auto_Create(QWidget *parent = Q_NULLPTR);
-
 private:
 	Ui::OTP_Guide_Auto_CreateClass ui;
 	std::shared_ptr<ProjectInformation_UI> m_ProjectInformation;
