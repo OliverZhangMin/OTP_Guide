@@ -11,7 +11,10 @@
 #include<boost/assign.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/lexical_cast.hpp>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include <Windows.h>
 //ss
 //判断是否是16进制的字符串

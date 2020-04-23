@@ -26,4 +26,5 @@ private:
 	OTPGuideInfo m_GuideInfo;
 private slots:
 	void callback_currentChanged(int);
+	void callback_GenerateOTPGuide();
 };

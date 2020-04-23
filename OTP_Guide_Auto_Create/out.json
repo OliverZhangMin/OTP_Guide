@@ -1,0 +1,35 @@
+{
+	"awb" : 
+	{
+		"BurnData" : 
+		[
+			{
+				"data" : "0.af_code.far_code",
+				"length" : 2,
+				"outconvert" : "HL",
+				"start" : "0x2"
+			},
+			{
+				"data" : "0.af_code.near_code",
+				"length" : 1,
+				"outconvert" : "L",
+				"start" : "0x4"
+			}
+		],
+		"CheckSum" : 
+		{
+			"CheckSumType" : 2,
+			"CheckSum_Addr" : 
+			[
+				"0x5"
+			],
+			"UsedRange" : 
+			[
+				{
+					"end" : "0x4",
+					"start" : "0x2"
+				}
+			]
+		}
+	}
+}

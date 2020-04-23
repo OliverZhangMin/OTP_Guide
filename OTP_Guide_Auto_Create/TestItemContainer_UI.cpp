@@ -21,6 +21,34 @@ TestItemContainer_UI::~TestItemContainer_UI()
 
 }
 
+Json::Value TestItemContainer_UI::GetJsons()
+{
+	Json::Value all_json;
+	for (int i = 0; i < ui.m_tabWidget->count(); i++)
+	{
+		QTabWidget* p_tab = (QTabWidget*)ui.m_tabWidget->widget(i);
+
+		string algo_name = ui.m_tabWidget->tabText(i).toLocal8Bit().data();
+		BurnRule_UI* p_burn_rule = (BurnRule_UI*)p_tab->widget(1);
+		Json::Value json_tmp;
+		if (!p_burn_rule->GetRuleJson(json_tmp))
+		{
+			string str_log = (boost::format("%s[ERROR]:模块%s获取json数据失败")%__FUNCTION__ %algo_name).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return Json::Value();
+		}
+		all_json[algo_name] = json_tmp;
+	}
+	ostringstream os;
+	Json::StreamWriterBuilder swb_cloud_burn;
+	unique_ptr<Json::StreamWriter> writer_cloud(swb_cloud_burn.newStreamWriter());
+	writer_cloud->write(all_json, &os);
+	ofstream ofile("out.json", ios::binary | ios::out);
+	ofile << os.str();
+	ofile.close();
+	return all_json;
+}
+
 void TestItemContainer_UI::callback_customContextMenuRequested(QPoint pt)
 {
 	m_pTestItemContainertMenu->popup(ui.m_tabWidget->mapToGlobal(pt));
@@ -36,7 +64,7 @@ void TestItemContainer_UI::TestItemInsert()
 		auto& item = *(m_guideInfo.m_vecBurnItems.rbegin());
 		item.title = text.toLocal8Bit().data();
 		Burn_TestItem_UI* p_desc = new Burn_TestItem_UI(item);
-		BurnRule_UI* p_rule = new BurnRule_UI;
+		BurnRule_UI* p_rule = new BurnRule_UI(item);
 		QTabWidget* p = new QTabWidget;
 		p->addTab(p_desc, QString::fromLocal8Bit("描述细节"));
 		p->addTab(p_rule, QString::fromLocal8Bit("烧录规则"));

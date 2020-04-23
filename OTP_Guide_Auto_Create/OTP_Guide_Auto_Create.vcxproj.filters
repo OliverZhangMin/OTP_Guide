@@ -58,6 +58,12 @@
     <ClCompile Include="BurnRule_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BurnAddrsAndChecksum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChecksumConfigurate_ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OTP_Guide_Auto_Create.h">
@@ -87,6 +93,12 @@
     <QtMoc Include="BurnRule_UI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="BurnAddrsAndChecksum.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ChecksumConfigurate_ui.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="OTP_Guide_Auto_Create.ui">
@@ -108,6 +120,12 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="BurnRule_UI.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="BurnAddrsAndChecksum.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ChecksumConfigurate_ui.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

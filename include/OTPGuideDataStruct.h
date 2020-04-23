@@ -92,6 +92,18 @@ struct BurnItem
 	vector<ContentData_TextImage> contentBeforeSubContent;
 	vector<BurnItem_SubContent> burnItemSubContents;
 
+	std::vector<std::vector<std::string>> m_vecBurnRule;
+	std::vector<std::vector<std::string>> m_vecCheckSumRange;
+	std::vector<std::vector<std::string>> m_vecCheckSumAddr;
+
+	std::vector<std::string> m_vecBurnRuleHeaderLabels;
+	std::vector<std::string> m_vecCheckSumRangeHeaderLabels;
+	std::vector<std::string> m_vecCheckSumAddrHeaderLabels;
+
+	std::vector<std::vector<std::string>> m_vecEEPROM_ChecksumRnage;
+	std::vector<std::vector<std::string>> m_vecSharedMemory_ChecksumRnage;
+
+
 	friend class boost::serialization::access;
 	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
 		ar & title;

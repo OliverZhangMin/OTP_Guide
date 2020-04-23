@@ -6,7 +6,9 @@
 #include <vector>
 #include <map>
 #include<QComboBox>
+#include <json.h>
 
+struct BurnItem;
 
 enum UI_TYPE
 {
@@ -15,34 +17,50 @@ enum UI_TYPE
 	ChecksumAddr
 };
 
+enum BurnMedium
+{
+	EEPROM_Medium = 0,
+	SENSOR_Medium,
+};
+
+struct CSubBurnProp
+{
+	int address = 0;
+	int length = 0;
+	std::string m_strData ="";
+	std::string m_strSplit ="";
+};
+
 class BurnRule_UI : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	BurnRule_UI(QWidget *parent = Q_NULLPTR);
+	BurnRule_UI(BurnItem& burnItem,QWidget *parent = Q_NULLPTR);
 	~BurnRule_UI();
 	void ShowExcel(UI_TYPE type);
 	void ShowBurnRuleExcel();
 	void ShowCheckSumRange();
 	void ShowCheckSumAddr();
+	bool GetRuleJson(Json::Value& out_json);
+	bool CommonConvert(Json::Value& out_json, const CSubBurnProp& prop, BurnMedium);
 private:
 	Ui::BurnRule_UI ui;
-	std::map<std::string,std::string> m_mapJsonBurnKeyString;
+	std::map<std::string, std::string> m_mapJsonBurnKeyString;
 	std::map<std::string, std::vector<std::string>> m_mapVecJsonStruct;
 
-	QList<QString> m_QlistSplit;		//拆分类型下拉框
-	QList<QString> m_QlistChecksumDataSource;	//checksum数据来源下拉框
+	QList<QString> m_QlistSplit;				//拆分类型下拉框
+	//QList<QString> m_QlistChecksumDataSource;	//checksum数据来源下拉框
 	QList<QString> m_QlistChecksumAddrOrder;	//chekcsum计算数据后拆分排序
 	QList<QString> m_QlistChecksumCalType;		//checksum计算类型
 
-	std::vector<std::vector<std::string>> m_vecBurnRule;	
-	std::vector<std::vector<std::string>> m_vecCheckSumRange;
-	std::vector<std::vector<std::string>> m_vecCheckSumAddr;
+	std::vector<std::vector<std::string>>& m_vecBurnRule;	
+	std::vector<std::vector<std::string>>& m_vecCheckSumRange;
+	std::vector<std::vector<std::string>>& m_vecCheckSumAddr;
+	std::vector<std::string>& m_vecBurnRuleHeaderLabels;
+	std::vector<std::string>& m_vecCheckSumRangeHeaderLabels;
+	std::vector<std::string>& m_vecCheckSumAddrHeaderLabels;
 
-	std::vector<std::string> m_vecBurnRuleHeaderLabels;
-	std::vector<std::string> m_vecCheckSumRangeHeaderLabels;
-	std::vector<std::string> m_vecCheckSumAddrHeaderLabels;
 	QLineEdit* p_lineEdit = nullptr;
 protected:
 	virtual void keyPressEvent(QKeyEvent * k) override;

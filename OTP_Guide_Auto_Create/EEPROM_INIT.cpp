@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EEPROM_INIT.h"
 #include "Burn_Station_ui.h"
+#include "BurnAddrsAndChecksum.h"
 
 EEPROM_INIT::EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent)
 	: QMainWindow(parent), m_GuideInfo(guide_info)
@@ -44,10 +45,11 @@ void EEPROM_INIT::BurnStationInsert()
 		QMessageBox::information(NULL, QString::fromLocal8Bit("´íÎó"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 		return;
 	}
+	BurnAddrsAndChecksum* p_burnaddr = new BurnAddrsAndChecksum(m_GuideInfo);
 
-	m_GuideInfo.m_VecBurnStationAddr.push_back(make_pair(text.toLocal8Bit().data(), ExcelProp()));
+	/*m_GuideInfo.m_VecBurnStationAddr.push_back(make_pair(text.toLocal8Bit().data(), ExcelProp()));
 	Qt_Excel* p_tmp = new Burn_Station_ui(m_GuideInfo.m_VecBurnStationAddr.rbegin()->second);
-	ui.m_tabWidget_BurnStation->addTab(p_tmp, QString::fromLocal8Bit(m_GuideInfo.m_VecBurnStationAddr.rbegin()->first.c_str()));
+	ui.m_tabWidget_BurnStation->addTab(p_tmp, QString::fromLocal8Bit(m_GuideInfo.m_VecBurnStationAddr.rbegin()->first.c_str()));*/
 }
 
 void EEPROM_INIT::callback_BurnStationAddrWidget_customContextMenuRequested(QPoint pt)
