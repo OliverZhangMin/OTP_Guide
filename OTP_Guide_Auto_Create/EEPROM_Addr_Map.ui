@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>EEPROM_Addr_Map</class>
- <widget class="QMainWindow" name="EEPROM_Addr_Map">
+ <widget class="QWidget" name="EEPROM_Addr_Map">
   <property name="geometry">
    <rect>
     <x>0</x>

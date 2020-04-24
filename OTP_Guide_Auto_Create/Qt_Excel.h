@@ -1,17 +1,18 @@
 #pragma once
 #include <QWidget>
 #include "ui_Qt_Excel.h"
-
+#include "MyWidgetBase.h"
 using namespace std;
 struct ExcelProp;
 
-class Qt_Excel : public QWidget
+class Qt_Excel : public CMyWidgetBase
 {
 	Q_OBJECT
 
 public:
 	Qt_Excel(ExcelProp&,QWidget *parent = Q_NULLPTR);
 	~Qt_Excel();
+	virtual void UpdataWidget() override;
 private:
 protected:
 	Ui::Qt_Excel ui;

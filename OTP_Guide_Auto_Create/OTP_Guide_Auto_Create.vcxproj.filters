@@ -141,5 +141,8 @@
     <ClInclude Include="..\include\OTPGuideDataStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyWidgetBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,4 +15,10 @@ ChecksumConfigurate_ui::ChecksumConfigurate_ui(BurnItem& item,QWidget *parent)
 
 ChecksumConfigurate_ui::~ChecksumConfigurate_ui()
 {
+
+}
+
+void ChecksumConfigurate_ui::callback_customContextMenuRequested(QPoint pt)
+{
+
 }

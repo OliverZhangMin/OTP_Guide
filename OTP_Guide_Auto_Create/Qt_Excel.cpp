@@ -4,7 +4,7 @@
 #include <boost/format.hpp>
 
 Qt_Excel::Qt_Excel(ExcelProp& out_excel,QWidget *parent)
-	:m_outExcel(out_excel), QWidget(parent)
+	:m_outExcel(out_excel), CMyWidgetBase(parent)
 {
 	ui.setupUi(this);
 	QStringList headerLabels;
@@ -66,6 +66,11 @@ void Qt_Excel::keyPressEvent(QKeyEvent * k)
 		return;
 	}
 	QWidget::keyPressEvent(k);
+}
+
+void Qt_Excel::UpdataWidget()
+{
+	ShowExcel();
 }
 
 void Qt_Excel::ShowExcel()

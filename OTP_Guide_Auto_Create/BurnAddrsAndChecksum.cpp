@@ -1,17 +1,33 @@
 #include "stdafx.h"
 #include "BurnAddrsAndChecksum.h"
+#include "ChecksumConfigurate_ui.h"
+#include "EEPROM_INIT.h"
 #include <QKeyEvent>
+#include <QMenu>
 
-BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,QWidget *parent)
-	: QWidget(parent)
+BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,EEPROM_INIT* p_init, QWidget *parent)
+	: QWidget(parent), m_GuideInfo(guide_info), m_pInitWidget(p_init)
 {
 	ui.setupUi(this);
 	ui.m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+	m_pMenuCheckSumConfig = new QMenu(ui.m_ChecksumConfigtabWidget);
+	QAction* p_DeleteCheckSumConfig = new QAction(QString::fromLocal8Bit("删除当前checksum数据来源"), this);
+	m_pMenuCheckSumConfig->addAction(p_DeleteCheckSumConfig);
+	connect(p_DeleteCheckSumConfig, &QAction::triggered, this, &BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig);
+
 }
 
 BurnAddrsAndChecksum::~BurnAddrsAndChecksum()
 {
 
+}
+
+void BurnAddrsAndChecksum::AddCheckSumConfigInfo(BurnItem& item)
+{
+	ChecksumConfigurate_ui* p_checksumConfig = new ChecksumConfigurate_ui(item);
+	string algo_name = item.title;
+	ui.m_ChecksumConfigtabWidget->addTab(p_checksumConfig , QString::fromLocal8Bit(algo_name.c_str()));
 }
 
 void BurnAddrsAndChecksum::ShowExcel()
@@ -71,4 +87,30 @@ void BurnAddrsAndChecksum::callback_BurnAddrWidgetItemChanged(QTableWidgetItem* 
 	string m_str = item->text().toLocal8Bit().data();
 	m_vecBurnAddrs[row][col] = m_str;
 	ShowExcel();
+}
+
+void BurnAddrsAndChecksum::callback_ChecksumConfigcustomContextMenuRequested(QPoint pt)
+{
+	m_pMenuCheckSumConfig->popup(ui.m_ChecksumConfigtabWidget->mapToGlobal(pt));
+}
+
+void BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig()
+{
+	int cur_select_index = ui.m_ChecksumConfigtabWidget->currentIndex();
+	if (cur_select_index == -1)
+	{
+		string str_log = (boost::format("%s[ERROR]:当前没有选择的tab,无法删除")%__FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	string algo_name = ui.m_ChecksumConfigtabWidget->tabText(cur_select_index).toLocal8Bit().data();	//获取当前选中的tab的名字
+	
+	auto iter = std::find_if(m_GuideInfo.m_vecSpaceUsageCheckSum.begin(), m_GuideInfo.m_vecSpaceUsageCheckSum.end(), [algo_name](string& str)	// 找到该tab名字对应的占用chekcsum容器中的迭代器位置
+	{
+		return algo_name == str;
+	}
+	);
+	m_GuideInfo.m_vecSpaceUsageCheckSum.erase(iter);	//删除该迭代器
+	ui.m_ChecksumConfigtabWidget->removeTab(cur_select_index);
+	m_pInitWidget->UpdataWidget();
 }

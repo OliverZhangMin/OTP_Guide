@@ -7,7 +7,7 @@
 #include <qtabwidget.h>
 
 TestItemContainer_UI::TestItemContainer_UI(OTPGuideInfo& guide_info,QWidget *parent)
-	: QWidget(parent), m_guideInfo(guide_info)
+	: CMyWidgetBase(parent), m_guideInfo(guide_info)
 {
 	ui.setupUi(this);
 	m_pTestItemContainertMenu = new QMenu(ui.m_tabWidget);
@@ -76,4 +76,9 @@ void TestItemContainer_UI::TestItemInsert()
 		QMessageBox::information(NULL, QString::fromLocal8Bit("´íÎó"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 		return;
 	}
+}
+
+void TestItemContainer_UI::UpdataWidget()
+{
+
 }

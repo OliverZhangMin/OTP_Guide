@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>BurnRule_UI</class>
- <widget class="QMainWindow" name="BurnRule_UI">
+ <widget class="QWidget" name="BurnRule_UI">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -31,7 +31,7 @@ void MyCombox::callback_currentTextChanged(QString qstr)
 //}
 
 BurnRule_UI::BurnRule_UI(BurnItem& bItem,QWidget *parent)
-	: QMainWindow(parent),m_vecBurnRule(bItem.m_vecBurnRule),
+	: QWidget(parent),m_vecBurnRule(bItem.m_vecBurnRule),
 	m_vecCheckSumRange(bItem.m_vecCheckSumRange),
 	m_vecCheckSumAddr(bItem.m_vecCheckSumAddr),
 	m_vecBurnRuleHeaderLabels(bItem.m_vecBurnRuleHeaderLabels),

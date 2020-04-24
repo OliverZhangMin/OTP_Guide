@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QMainWindow>
+#include <QWidget>
 #include "ui_BurnRule_UI.h"
 #include <string>
 #include <vector>
 #include <map>
-#include<QComboBox>
 #include <json.h>
+#include<QComboBox>
 
 struct BurnItem;
 
@@ -31,7 +31,7 @@ struct CSubBurnProp
 	std::string m_strSplit ="";
 };
 
-class BurnRule_UI : public QMainWindow
+class BurnRule_UI : public QWidget
 {
 	Q_OBJECT
 

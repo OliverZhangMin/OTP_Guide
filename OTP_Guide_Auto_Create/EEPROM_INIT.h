@@ -1,17 +1,18 @@
 #pragma once
 #include <QMainWindow>
 #include "ui_EEPROM_INIT.h"
+#include "MyWidgetBase.h"
 #include <vector>
 struct OTPGuideInfo;
 
-class EEPROM_INIT : public QMainWindow
+class EEPROM_INIT : public CMyWidgetBase
 {
 	Q_OBJECT
 
 public:
 	EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent = Q_NULLPTR);
 	~EEPROM_INIT();
-	void UpdataUiByGuideInfo();
+	virtual void UpdataWidget() override;
 private:
 	Ui::EEPROM_INIT ui;
 	QMenu * m_pBurnStationWidgetMenu = nullptr;
@@ -23,4 +24,5 @@ private slots:
 	void BurnStationInsert();
 	void callback_textChanged(QString);
 	void callback_textChangedBurnDefaultVal(QString);
+	void callback_doubleClicked(QModelIndex);	//双击按下 未配置checksum的模块 的列表框
 };

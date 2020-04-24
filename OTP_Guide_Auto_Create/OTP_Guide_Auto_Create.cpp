@@ -16,23 +16,26 @@ OTP_Guide_Auto_Create::OTP_Guide_Auto_Create(QWidget *parent)
 	AllocConsole();                     // 打开控制台资源
 	freopen("CONOUT$", "w+t", stdout);// 申请写
 
-	m_ProjectInformation.reset(new ProjectInformation_UI(m_GuideInfo));		//项目信息
-	m_pEEPROM_init.reset(new EEPROM_INIT(m_GuideInfo));						//初始化
-	m_pEEPROM_addr_Map.reset(new EEPROM_Addr_Map(m_GuideInfo));
-	m_pBurnTestItem.reset(new TestItemContainer_UI(m_GuideInfo));
-	ui.m_tabWidget->addTab(m_pEEPROM_addr_Map.get(), QString::fromLocal8Bit("EEPROM映射表"));
-	ui.m_tabWidget->addTab(m_pEEPROM_init.get(), QString::fromLocal8Bit("init"));
-	ui.m_tabWidget->addTab(m_ProjectInformation.get(), QString::fromLocal8Bit("项目信息"));
-	ui.m_tabWidget->addTab(m_pBurnTestItem.get(), QString::fromLocal8Bit("烧录测试项信息"));
+	m_mapWidgets["EEPROM映射表"].reset(new EEPROM_Addr_Map(m_GuideInfo));
+	m_mapWidgets["烧录初始配置"].reset(new EEPROM_INIT(m_GuideInfo));
+	m_mapWidgets["项目信息"].reset(new ProjectInformation_UI(m_GuideInfo));
+	m_mapWidgets["烧录测试项信息"].reset(new TestItemContainer_UI(m_GuideInfo));
+
+	for (auto& wid : m_mapWidgets)
+	{
+		ui.m_tabWidget->addTab(wid.second.get(), QString::fromLocal8Bit(wid.first.c_str()));
+	}
 }
 
 void OTP_Guide_Auto_Create::callback_currentChanged(int index)
 {
-	m_ProjectInformation->ShowExcel();
-	if (ui.m_tabWidget->tabText(index) == QString::fromLocal8Bit("init"))
-	{
-
-	}
+	string tab_name = ui.m_tabWidget->tabText(index).toLocal8Bit().data();
+	if(m_mapWidgets[tab_name].get())
+		m_mapWidgets[tab_name]->UpdataWidget();
+	//m_ProjectInformation->ShowExcel();
+	//if (ui.m_tabWidget->tabText(index) == QString::fromLocal8Bit("init"))
+	//{
+	//}
 }
 
 void OTP_Guide_Auto_Create::callback_GenerateOTPGuide()

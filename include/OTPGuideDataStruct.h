@@ -100,7 +100,7 @@ struct BurnItem
 	std::vector<std::string> m_vecCheckSumRangeHeaderLabels;
 	std::vector<std::string> m_vecCheckSumAddrHeaderLabels;
 
-	std::vector<std::vector<std::string>> m_vecEEPROM_ChecksumRnage;
+	std::vector<std::vector<std::string>> m_vecEEPROM_ChecksumRnage;		//checksum用到的地址范围
 	std::vector<std::vector<std::string>> m_vecSharedMemory_ChecksumRnage;
 
 
@@ -162,6 +162,8 @@ struct OTPGuideInfo
 	vector<string> m_vecAgreeOnInfo;
 	EEPROMAddrExcelProp m_EEPROMAddrExcel;
 
+	vector<string> m_vecSpaceUsageCheckSum;		//目前被配置使用的checksum名字
+	
 	bool m_bIsChanged = false;
 	int m_iDefaultValue = 0;
 
