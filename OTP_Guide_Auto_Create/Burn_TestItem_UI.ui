@@ -66,17 +66,38 @@
     </layout>
    </item>
    <item>
-    <widget class="QTabWidget" name="m_tabWidget">
-     <property name="minimumSize">
-      <size>
-       <width>650</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="movable">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QTabWidget" name="m_tabWidget">
+       <property name="minimumSize">
+        <size>
+         <width>650</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="movable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>描述</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="m_textEditDesc">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>100</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -106,8 +127,8 @@
    <slot>callback_addClick()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>309</x>
-     <y>39</y>
+     <x>307</x>
+     <y>40</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -131,10 +152,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_textEditDesc</sender>
+   <signal>textChanged()</signal>
+   <receiver>Burn_TestItem_UI</receiver>
+   <slot>callback_DescTextEditTextChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>384</x>
+     <y>749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>828</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>callback_doubleClick(QModelIndex)</slot>
   <slot>callback_addClick()</slot>
   <slot>callback_tabBarClicked(int)</slot>
+  <slot>callback_DescTextEditTextChanged()</slot>
  </slots>
 </ui>

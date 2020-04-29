@@ -18,6 +18,8 @@ bool IsInteger(const string& str)
 	for (auto it = it_begin; it != it_end; it++)
 		return false;
 
+	if (str.empty())
+		return false;
 	return true;
 }
 
@@ -58,4 +60,166 @@ string wstring2string(wstring wstr)
 	result.append(buffer);
 	delete[] buffer;
 	return result;
+}
+
+bool GetJsonByExcelProp(Json::Value& js, const ExcelProp& prop)
+{
+	Json::Value js_project_info;		//项目信息总数据
+	Json::Value js_Header;	//项目信息每行的数据
+	for (const auto& head : prop.m_vecHeaderLabels)
+		js_Header.append(head);
+	js["表头"] = js_Header;
+
+	Json::Value js_line;	//项目信息每行的数据
+	for (const auto& datas : prop.m_vecData)
+	{
+		js_line.clear();
+		for (const auto& info : datas)
+		{
+			js_line.append(info);
+		}
+		js["内容"].append(js_line);
+	}
+	return true;
+}
+
+bool GetExcelPropByJson(const Json::Value& js, ExcelProp& excel)
+{
+	if (!js.isNull())
+	{
+		if (!js["表头"].isNull())
+		{
+			const Json::Value& js_array = js["表头"];
+			for (int i = 0; i < js_array.size(); i++)
+				excel.m_vecHeaderLabels.push_back(js_array[i].asString());
+		}
+
+		if (!js["内容"].isNull())
+		{
+			const Json::Value& js_array1 = js["内容"];
+			for (int i = 0; i < js_array1.size(); i++)
+			{
+				const Json::Value& js_array2 = js_array1[i];
+				vector<string> vec_str;
+				for (int k = 0; k < js_array2.size(); k++)
+					vec_str.push_back(js_array2[k].asString());
+				excel.m_vecData.push_back(vec_str);
+			}
+		}
+	}
+	return true;
+}
+
+bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
+{
+	ifstream ifile("out.json", ios::binary | ios::in);
+	if (!ifile.is_open())
+	{
+		cout << "打开配置文件失败" << endl;
+		return false;
+	}
+	Json::Value root;
+	Json::CharReaderBuilder crb;
+	unique_ptr<Json::CharReader> reader(crb.newCharReader());
+	ostringstream os;
+	os << ifile.rdbuf();
+	string buff = os.str();
+	string strErrMsg;
+	if (!reader->parse(buff.c_str(), buff.c_str() + buff.length(), &root, &strErrMsg))
+	{
+		string str_log = (boost::format("解析%s的json数据失败,语法错误:%s") %("out.json") %strErrMsg).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return false;
+	}
+
+	if (!root["项目名"].isNull())
+		out.m_strProjectName = root["项目名"].asString();
+
+	Json::Value& js_eeprom_init = root["EEPROM初始化"];
+	if (!js_eeprom_init.isNull())
+	{
+		out.m_eepromInfo.m_str_eeprom_slaveid = js_eeprom_init["eeprom_slaveid"].asString();
+		out.m_eepromInfo.m_str_sensor_slaveid = js_eeprom_init["sensor_slaveid"].asString();
+		out.m_eepromInfo.m_str_DefaultVal     = js_eeprom_init["烧录默认值"].asString();
+		out.m_eepromInfo.m_str_ProtectIICMode	  = js_eeprom_init["写保护IIC模式"].asString();
+		out.m_eepromInfo.m_str_protect_slaveid = js_eeprom_init["写保护slaveid"].asString();
+		out.m_eepromInfo.m_str_protectAddr = js_eeprom_init["写保护寄存器"].asString();
+		out.m_eepromInfo.m_bProtectEnable = js_eeprom_init["写保护开关"].asBool();
+		out.m_eepromInfo.m_str_protectVal = js_eeprom_init["写保护值"].asString();
+	}
+
+	Json::Value& js_burn_station_addr = root["烧录站别地址"];
+	if (!js_burn_station_addr.isNull())
+	{
+		auto vec_names = js_burn_station_addr.getMemberNames();
+		for(const auto& name:vec_names)
+			GetExcelPropByJson(js_burn_station_addr[name], out.m_mapBurnAddrs[name]);
+	}
+
+	Json::Value& js_BurnStationModule = root["烧录站别的模块"];
+	if (!js_BurnStationModule.isNull())
+	{
+		//先获取站别名
+		auto vec_names = js_BurnStationModule.getMemberNames();
+		//在把每个站别下的模块填充到数据结构
+		for (const auto& name : vec_names)
+		{
+			Json::Value& js_station_name = js_BurnStationModule[name];
+			for (int i = 0; i < js_station_name.size(); i++)
+				out.m_mapVecNeedBurnName[name].push_back(js_station_name[i].asString());
+		}
+	}
+
+	Json::Value& js_projectInfo = root["项目信息"];
+	GetExcelPropByJson(js_projectInfo, out.m_vecProjectInfo);
+
+	Json::Value& js_Items = root["模块配置"];
+	if (!js_Items.isNull())
+	{
+		int count = js_Items.size();
+		for (int i = 0; i < count; i++)
+		{
+			Json::Value& js_item = js_Items[i];
+			std::shared_ptr<BurnItem> p_BurnItem(new BurnItem);
+			p_BurnItem->title = js_item["模块名称"].asString();
+			out.m_vecBurnItems.push_back(p_BurnItem);
+			
+			if (!js_item["烧录规则"].isNull())
+				GetExcelPropByJson(js_item["烧录规则"]	   , p_BurnItem->m_BurnRlueExcel);
+			 
+			if(!js_item["CheckSum范围"].isNull())
+				GetExcelPropByJson(js_item["CheckSum范围"] , p_BurnItem->m_CheckSumRangeExcel);
+
+			if (!js_item["CheckSum地址"].isNull())
+				GetExcelPropByJson(js_item["CheckSum地址"] , p_BurnItem->m_CheckSumAddrExcel);
+
+			if (!js_item["参数配置项"].isNull())
+			{
+				Json::Value& js_item_config = js_item["参数配置项"];
+				int configs_count = js_item_config.size();
+				for (int k = 0; k < configs_count; k++)
+				{
+					Json::Value& js_array = js_item_config[k];
+					BurnItem_SubContent subCont;
+					subCont.subTitle = js_array["配置名"].asString();
+					GetExcelPropByJson(js_array, subCont.m_burnExcelTable);
+					p_BurnItem->burnItemSubContents.push_back(subCont);
+				}
+			}
+			//获取描述信息
+			if (!js_item["描述"].isNull())
+			{
+				ContentData_TextImage txtImage;
+				txtImage.type = 0;
+				string str_data = js_item["描述"].asString();
+				for (const auto& data : str_data)
+					txtImage.data.push_back(data);
+				p_BurnItem->contentBeforeSubContent.push_back(txtImage);
+			}
+		}
+	}
+
+	//获取修改历史
+	GetExcelPropByJson(root["修改历史"], out.m_vecChangeHistroy);
+	return true;
 }

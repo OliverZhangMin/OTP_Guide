@@ -67,7 +67,7 @@ map<string,  vector<vector<string>>> Ini_GuideTemplateNames::GetDefaultSectionBy
 	return out_mapSections;
 }
 
-Burn_TestItem_UI::Burn_TestItem_UI(BurnItem& burnItem, QWidget *parent)
+Burn_TestItem_UI::Burn_TestItem_UI(std::shared_ptr<BurnItem> burnItem, QWidget *parent)
 	: m_curBurnItem(burnItem), QWidget(parent)
 {
 	ui.setupUi(this);
@@ -83,6 +83,13 @@ Burn_TestItem_UI::Burn_TestItem_UI(BurnItem& burnItem, QWidget *parent)
 	//	m_vecSectionName.push_back(config_param.first);										//记录该section的名字
 	//	ui.m_tabWidget->addTab(config_excel_ui, QString::fromLocal8Bit(config_param.first.c_str()));
 	//}
+	for (auto& sub_item : m_curBurnItem->burnItemSubContents)
+	{
+		Qt_Excel* config_excel_ui = new Qt_Excel(sub_item.m_burnExcelTable /*.m_burnExcelTable*/);
+		m_vecSectionName.push_back(sub_item.subTitle);										//记录该section的名字
+		ui.m_tabWidget->addTab(config_excel_ui, QString::fromLocal8Bit(sub_item.subTitle.c_str()));
+		ui.m_tabWidget->setCurrentIndex(ui.m_tabWidget->count() - 1);
+	}
 }
 
 Burn_TestItem_UI::~Burn_TestItem_UI()
@@ -146,8 +153,8 @@ void Burn_TestItem_UI::callback_doubleClick(QModelIndex index)
 		return;
 	}
 
-	m_curBurnItem.burnItemSubContents.push_back(BurnItem_SubContent());
-	auto& subContent = *(m_curBurnItem.burnItemSubContents.rbegin());
+	m_curBurnItem->burnItemSubContents.push_back(BurnItem_SubContent());
+	auto& subContent = *(m_curBurnItem->burnItemSubContents.rbegin());
 	//检查模板ini文件,如果存在模板,则使用模板内部的参数
 	if (m_mapTemplateSections.find(str_selected) != m_mapTemplateSections.end())
 	{
@@ -181,8 +188,8 @@ void Burn_TestItem_UI::callback_addClick()
 		return;
 	}
 
-	m_curBurnItem.burnItemSubContents.push_back(BurnItem_SubContent());
-	auto& subContent = *(m_curBurnItem.burnItemSubContents.rbegin());
+	m_curBurnItem->burnItemSubContents.push_back(BurnItem_SubContent());
+	auto& subContent = *(m_curBurnItem->burnItemSubContents.rbegin());
 	boost::assign::push_back(subContent.m_burnExcelTable.m_vecHeaderLabels)("Item")("Contents")("Remark");
 	Qt_Excel* config_excel_ui = new Qt_Excel(subContent.m_burnExcelTable);
 	m_vecSectionName.push_back(input_section);										//记录该section的名字
@@ -193,4 +200,17 @@ void Burn_TestItem_UI::callback_addClick()
 void Burn_TestItem_UI::callback_tabBarClicked(int index)
 {
 	i_currentIndex = index;
+}
+
+void Burn_TestItem_UI::callback_DescTextEditTextChanged()
+{
+	ContentData_TextImage text_data;
+	text_data.type = 0;
+	string str_data = ui.m_textEditDesc->document()->toPlainText().toLocal8Bit().data();
+	for (const auto& it : str_data)
+		text_data.data.push_back(it);
+	text_data.data.push_back('\0');
+
+	m_curBurnItem->contentBeforeSubContent.clear();
+	m_curBurnItem->contentBeforeSubContent.push_back(text_data);
 }

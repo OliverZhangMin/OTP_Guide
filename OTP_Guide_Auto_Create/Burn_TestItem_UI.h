@@ -29,12 +29,12 @@ class Burn_TestItem_UI : public QWidget
 	Q_OBJECT
 
 public:
-	Burn_TestItem_UI(BurnItem&,QWidget *parent = Q_NULLPTR);
+	Burn_TestItem_UI(std::shared_ptr<BurnItem>,QWidget *parent = Q_NULLPTR);
 	~Burn_TestItem_UI();
 
 private:
 	std::string m_strLabelName = "";
-	BurnItem& m_curBurnItem;
+	std::shared_ptr<BurnItem> m_curBurnItem;
 	
 	map<string, vector<vector<string>>> m_mapTemplateSections;
 	vector<string>m_vecSectionName;
@@ -50,4 +50,5 @@ private slots:
 	void callback_doubleClick(QModelIndex);
 	void callback_addClick();
 	void callback_tabBarClicked(int);
+	void callback_DescTextEditTextChanged();
 };

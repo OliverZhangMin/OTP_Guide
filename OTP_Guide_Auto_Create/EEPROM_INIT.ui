@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1427</width>
-    <height>916</height>
+    <width>1582</width>
+    <height>1198</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -19,10 +19,10 @@
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1121</width>
-     <height>920</height>
+     <x>20</x>
+     <y>110</y>
+     <width>1051</width>
+     <height>901</height>
     </rect>
    </property>
    <widget class="QLineEdit" name="m_lineEdit_SensorSlaveID">
@@ -133,6 +133,111 @@
      <enum>Qt::CustomContextMenu</enum>
     </property>
    </widget>
+   <widget class="QCheckBox" name="m_checkBoxProtect">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>20</y>
+      <width>111</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>开启写保护</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>80</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>写保护寄存器</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="m_lineEditProtectAddr">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>80</y>
+      <width>113</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>120</y>
+      <width>72</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>写保护值</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="m_lineEditProtectVal">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>110</y>
+      <width>113</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>150</y>
+      <width>72</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>IICMode</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="m_lineEditIICMode">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>140</y>
+      <width>113</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>50</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>写保护SlaveID</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="m_lineEditProtectSlaveID">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>50</y>
+      <width>113</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -167,11 +272,47 @@
   <widget class="QListWidget" name="m_UsedChecksumlistWidget">
    <property name="geometry">
     <rect>
-     <x>1095</x>
-     <y>190</y>
-     <width>311</width>
-     <height>701</height>
+     <x>1330</x>
+     <y>180</y>
+     <width>241</width>
+     <height>681</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>1360</x>
+     <y>140</y>
+     <width>181</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>未配置checksum地址模块</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="m_UsedConfigBurnModelWidget">
+   <property name="geometry">
+    <rect>
+     <x>1090</x>
+     <y>180</y>
+     <width>241</width>
+     <height>681</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>1150</x>
+     <y>140</y>
+     <width>181</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>未配置的烧录模块</string>
    </property>
   </widget>
  </widget>
@@ -201,28 +342,12 @@
    <slot>callback_textChanged(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>209</x>
-     <y>86</y>
+     <x>289</x>
+     <y>144</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
      <y>82</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_lineEdit_DefaultBurn</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>EEPROM_INIT</receiver>
-   <slot>callback_textChangedBurnDefaultVal(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>166</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>0</x>
-     <y>201</y>
     </hint>
    </hints>
   </connection>
@@ -233,7 +358,7 @@
    <slot>callback_doubleClicked(QModelIndex)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1183</x>
+     <x>1330</x>
      <y>241</y>
     </hint>
     <hint type="destinationlabel">
@@ -242,12 +367,46 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_checkBoxProtect</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>EEPROM_INIT</receiver>
+   <slot>callback_ProtectcheckboxClick(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>456</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>508</x>
+     <y>47</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_UsedConfigBurnModelWidget</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>EEPROM_INIT</receiver>
+   <slot>callback_ConfigBurnModelDoubleClicked(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1187</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1185</x>
+     <y>90</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>callback_BurnStationAddrWidget_customContextMenuRequested(QPoint)</slot>
   <slot>callback_textChanged(QString)</slot>
-  <slot>callback_textChangedBurnDefaultVal(QString)</slot>
   <slot>callback_doubleClicked(QModelIndex)</slot>
   <slot>callback_SpaceUseChecksumListTextChanged(QString)</slot>
+  <slot>callback_ProtectcheckboxClick(bool)</slot>
+  <slot>callback_ProtectTextChanged(QString)</slot>
+  <slot>callback_ConfigBurnModelDoubleClicked(QModelIndex)</slot>
  </slots>
 </ui>

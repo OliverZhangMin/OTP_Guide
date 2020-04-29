@@ -24,36 +24,41 @@ void MyCombox::callback_currentTextChanged(QString qstr)
 	m_pBurnRule->ShowExcel(ui_type);
 }
 
-//void MyComboxSplit::focusOutEvent(QFocusEvent *e)
-//{
-//	m_str = currentText().toLocal8Bit().data();
-//	m_pBurnRule->ShowBurnRuleExcel();
-//}
 
-BurnRule_UI::BurnRule_UI(BurnItem& bItem,QWidget *parent)
-	: QWidget(parent),m_vecBurnRule(bItem.m_vecBurnRule),
-	m_vecCheckSumRange(bItem.m_vecCheckSumRange),
-	m_vecCheckSumAddr(bItem.m_vecCheckSumAddr),
-	m_vecBurnRuleHeaderLabels(bItem.m_vecBurnRuleHeaderLabels),
-	m_vecCheckSumRangeHeaderLabels(bItem.m_vecCheckSumRangeHeaderLabels),
-	m_vecCheckSumAddrHeaderLabels(bItem.m_vecCheckSumAddrHeaderLabels)
+BurnRule_UI::BurnRule_UI(std::shared_ptr<BurnItem> bItem, QWidget *parent)
+	: QWidget(parent),
+	m_BurnItem(bItem),
+	//m_vecBurnRule(bItem.m_vecBurnRule),
+	//m_vecCheckSumRange(bItem->m_vecCheckSumRange),
+	//m_vecCheckSumAddr(bItem->m_vecCheckSumAddr),
+	m_BurnRlueExcel(bItem->m_BurnRlueExcel),
+	m_CheckSumRangeExcel(bItem->m_CheckSumRangeExcel),
+	m_CheckSumAddrExcel(bItem->m_CheckSumAddrExcel),
+	m_CheckSumDataSource(bItem->m_CheckSumDataSourceRnage)
+	//m_vecBurnRuleHeaderLabels(bItem->m_vecBurnRuleHeaderLabels),
+	//m_vecCheckSumRangeHeaderLabels(bItem->m_vecCheckSumRangeHeaderLabels),
+	//m_vecCheckSumAddrHeaderLabels(bItem->m_vecCheckSumAddrHeaderLabels)
 {
 	ui.setupUi(this);
 	//string filePath((strAppFolder + "\\DataSource.ini").GetBuffer());
-
 	//boost::filesystem::path DataSourcePath(boost::filesystem::current_path());
 	//DataSourcePath = DataSourcePath.parent_path().parent_path().append("DataSource.ini");
 	ui.m_BurnRuleTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	ui.m_CalSumRangeTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	ui.m_ChecksumAddrTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	
-	if(m_vecBurnRuleHeaderLabels.empty())
-		boost::assign::push_back(m_vecBurnRuleHeaderLabels)("地址")("烧录长度")("烧录数据")("拆分类型");
-	if (m_vecCheckSumRangeHeaderLabels.empty())
-		boost::assign::push_back(m_vecCheckSumRangeHeaderLabels)("计算CheckSum开始地址")("计算CheckSum结束地址")/*("区间数据来源")*/;
-	if (m_vecCheckSumAddrHeaderLabels.empty())
-		boost::assign::push_back(m_vecCheckSumAddrHeaderLabels)("CheckSum填充地址")("CheckSum地址个数")("地址排序")("类型");
+	if(m_BurnRlueExcel.m_vecHeaderLabels.empty())
+		boost::assign::push_back(m_BurnRlueExcel.m_vecHeaderLabels)("地址")("烧录长度")("烧录数据")("拆分类型");
+
+	if (m_CheckSumRangeExcel.m_vecHeaderLabels.empty())
+		boost::assign::push_back(m_CheckSumRangeExcel.m_vecHeaderLabels)("计算CheckSum开始地址")("计算CheckSum结束地址")/*("区间数据来源")*/;
+
+	if (m_CheckSumAddrExcel.m_vecHeaderLabels.empty())
+		boost::assign::push_back(m_CheckSumAddrExcel.m_vecHeaderLabels)("CheckSum填充地址")("CheckSum地址个数")("地址排序")("类型");
 	
+	if (m_CheckSumDataSource.m_vecHeaderLabels.empty())
+		boost::assign::push_back(m_CheckSumDataSource.m_vecHeaderLabels)("CheckSum子区间开始地址")("CheckSum子区间结束地址")("该区间数据来源");
+
 	m_QlistSplit.push_back("4Byte_H_L");
 	m_QlistSplit.push_back("4Byte_L_H");
 	m_QlistSplit.push_back("array");
@@ -68,6 +73,7 @@ BurnRule_UI::BurnRule_UI(BurnItem& bItem,QWidget *parent)
 	m_QlistChecksumAddrOrder.push_back("H_L");
 	m_QlistChecksumAddrOrder.push_back("L");
 	m_QlistChecksumAddrOrder.push_back("L_H");
+
 	m_QlistChecksumCalType.push_back("0 (%255+1)");
 	m_QlistChecksumCalType.push_back("1 (%256)");
 	m_QlistChecksumCalType.push_back("2 (%255)");
@@ -100,6 +106,10 @@ BurnRule_UI::BurnRule_UI(BurnItem& bItem,QWidget *parent)
 	//清空datasource列表
 	for (const auto& KeyName : m_mapJsonBurnKeyString)
 		ui.m_DataTypelistWidget->addItem(QString::fromLocal8Bit(KeyName.first.c_str()));
+
+	ShowExcel(BurnRule);
+	ShowExcel(CheckSumRange);
+	ShowExcel(ChecksumAddr);
 }
 
 BurnRule_UI::~BurnRule_UI()
@@ -116,14 +126,18 @@ void BurnRule_UI::keyPressEvent(QKeyEvent * k)
 			if (cur_row == -1)
 			{
 				vector<string> vec_tmp;
-				boost::assign::push_back(vec_tmp)("0x")("1")("")("");
-				m_vecBurnRule.push_back(vec_tmp);
+				vec_tmp.push_back("0x");
+				vec_tmp.push_back("1");
+				vec_tmp.push_back("");
+				vec_tmp.push_back("");
+				//boost::assign::push_back(vec_tmp)("0x")("1")("")("");
+				m_BurnItem->m_BurnRlueExcel.m_vecData.push_back(vec_tmp);
 			}
 			else
 			{
 				vector<string> vec_tmp;
 				boost::assign::push_back(vec_tmp)("0x")("1")("")("");
-				m_vecBurnRule.insert(m_vecBurnRule.begin() + cur_row, vec_tmp);
+				m_BurnItem->m_BurnRlueExcel.m_vecData.insert(m_BurnItem->m_BurnRlueExcel.m_vecData.begin() + cur_row, vec_tmp);
 			}
 			ShowExcel(BurnRule);
 		}
@@ -134,13 +148,13 @@ void BurnRule_UI::keyPressEvent(QKeyEvent * k)
 			{
 				vector<string> vec_tmp;
 				boost::assign::push_back(vec_tmp)("0x")("0x");
-				m_vecCheckSumRange.push_back(vec_tmp);
+				m_CheckSumRangeExcel.m_vecData.push_back(vec_tmp);
 			}
 			else
 			{
 				vector<string> vec_tmp;
 				boost::assign::push_back(vec_tmp)("0x")("0x");
-				m_vecCheckSumRange.insert(m_vecCheckSumRange.begin() + cur_row, vec_tmp);
+				m_CheckSumRangeExcel.m_vecData.insert(m_CheckSumRangeExcel.m_vecData.begin() + cur_row, vec_tmp);
 			}
 			ShowExcel(CheckSumRange);
 		}
@@ -158,13 +172,13 @@ void BurnRule_UI::keyPressEvent(QKeyEvent * k)
 			{
 				vector<string> vec_tmp;
 				boost::assign::push_back(vec_tmp)("0x")("")("")("");
-				m_vecCheckSumAddr.push_back(vec_tmp);
+				m_CheckSumAddrExcel.m_vecData.push_back(vec_tmp);
 			}
 			else
 			{
 				vector<string> vec_tmp;
 				boost::assign::push_back(vec_tmp)("0x")("")("")("");
-				m_vecCheckSumAddr.insert(m_vecCheckSumAddr.begin() + cur_row, vec_tmp);
+				m_CheckSumAddrExcel.m_vecData.insert(m_CheckSumAddrExcel.m_vecData.begin() + cur_row, vec_tmp);
 			}
 			ShowExcel(ChecksumAddr);
 		}
@@ -203,21 +217,23 @@ void BurnRule_UI::ShowBurnRuleExcel()
 	ui.m_BurnRuleTable->clearSpans();		//清空所有的合并
 	ui.m_BurnRuleTable->clear();
 	ui.m_BurnRuleTable->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
-	ui.m_BurnRuleTable->setRowCount(m_vecBurnRule.size());
-	ui.m_BurnRuleTable->setColumnCount(m_vecBurnRuleHeaderLabels.size());
+	int rows = m_BurnItem->m_BurnRlueExcel.m_vecData.size();
+	ui.m_BurnRuleTable->setRowCount(rows);
+	int cols = m_BurnItem->m_BurnRlueExcel.m_vecHeaderLabels.size();
+	ui.m_BurnRuleTable->setColumnCount(cols);
 
 	QStringList list_headerLabels;
-	for (const auto& label : m_vecBurnRuleHeaderLabels)
+	for (const auto& label : m_BurnItem->m_BurnRlueExcel.m_vecHeaderLabels)
 		list_headerLabels.push_back(QString::fromLocal8Bit(label.c_str()));
 	ui.m_BurnRuleTable->setHorizontalHeaderLabels(list_headerLabels);
 
-	for(int row = 0;row<m_vecBurnRule.size();row++)
-		for (int col = 0; col < m_vecBurnRuleHeaderLabels.size(); col++)
-			ui.m_BurnRuleTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_vecBurnRule[row][col].c_str())));
+	for(int row = 0;row < rows;row++)
+		for (int col = 0; col < cols; col++)
+			ui.m_BurnRuleTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_BurnItem->m_BurnRlueExcel.m_vecData[row][col].c_str())));
 
 	//数据有效性检查
-	for (int row = 0; row < m_vecBurnRule.size(); row++)
-		for (int col = 0; col < m_vecBurnRuleHeaderLabels.size(); col++)
+	for (int row = 0; row < rows; row++)
+		for (int col = 0; col < cols; col++)
 		{
 			string str = ui.m_BurnRuleTable->item(row, col)->text().toLocal8Bit().data();
 			if (col == 0)
@@ -244,19 +260,19 @@ void BurnRule_UI::ShowCheckSumRange()
 	ui.m_CalSumRangeTable->clearSpans();		//清空所有的合并
 	ui.m_CalSumRangeTable->clear();
 	ui.m_CalSumRangeTable->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
-	int rows = m_vecCheckSumRange.size();
+	int rows = m_CheckSumRangeExcel.m_vecData.size();
 	ui.m_CalSumRangeTable->setRowCount(rows);
-	int cols = m_vecCheckSumRangeHeaderLabels.size();
+	int cols = m_CheckSumRangeExcel.m_vecHeaderLabels.size();
 	ui.m_CalSumRangeTable->setColumnCount(cols);
 	
 	QStringList list_headerLabels;
-	for (const auto& label : m_vecCheckSumRangeHeaderLabels)
+	for (const auto& label : m_CheckSumRangeExcel.m_vecHeaderLabels)
 		list_headerLabels.push_back(QString::fromLocal8Bit(label.c_str()));
 	ui.m_CalSumRangeTable->setHorizontalHeaderLabels(list_headerLabels);
 
 	for (int row = 0; row < rows; row++)
 		for (int col = 0; col < cols; col++)
-			ui.m_CalSumRangeTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_vecCheckSumRange[row][col].c_str())));
+			ui.m_CalSumRangeTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_CheckSumRangeExcel.m_vecData[row][col].c_str())));
 
 	//数据有效性检查
 	for (int row = 0; row < rows; row++)
@@ -319,7 +335,7 @@ bool BurnRule_UI::CommonConvert(Json::Value& out_json, const CSubBurnProp& prop,
 bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 {
 	//数据有效性检查
-	for (auto& rules : m_vecBurnRule)
+	for (auto& rules : m_BurnItem->m_BurnRlueExcel.m_vecData)
 	{
 		if (!IsHex(rules[0]))
 		{
@@ -341,7 +357,7 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 			return false;
 		}
 	}
-	for (auto& rang : m_vecCheckSumRange)
+	for (auto& rang : m_CheckSumRangeExcel.m_vecData)
 	{
 		if (!IsHex(rang[1]) || !IsHex(rang[0]))
 		{
@@ -350,7 +366,7 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 			return false;
 		}
 	}
-	for (auto& sums : m_vecCheckSumAddr)
+	for (auto& sums : m_CheckSumAddrExcel.m_vecData)
 	{
 		if (!IsHex(sums[0]))
 		{
@@ -374,21 +390,21 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 
 	//拼接成json数据
 	Json::Value Burn_Data;
-	for (int i = 0; i < m_vecBurnRule.size(); i++)
+	for (int i = 0; i < m_BurnItem->m_BurnRlueExcel.m_vecData.size(); i++)
 	{
 		try
 		{
 			CSubBurnProp prop;
-			sscanf(m_vecBurnRule[i][0].c_str(), "%x", &prop.address);
-			sscanf(m_vecBurnRule[i][1].c_str(), "%d", &prop.length);
+			sscanf(m_BurnItem->m_BurnRlueExcel.m_vecData[i][0].c_str(), "%x", &prop.address);
+			sscanf(m_BurnItem->m_BurnRlueExcel.m_vecData[i][1].c_str(), "%d", &prop.length);
 			if (prop.length <= 0)
 			{
 				string str_log = (boost::format("%s [ERROR]:烧录长度不能<=0") % __FUNCTION__).str();
 				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 				return false;
 			}
-			prop.m_strData = m_vecBurnRule[i][2];
-			prop.m_strSplit = m_vecBurnRule[i][3];
+			prop.m_strData  = m_BurnItem->m_BurnRlueExcel.m_vecData[i][2];
+			prop.m_strSplit = m_BurnItem->m_BurnRlueExcel.m_vecData[i][3];
 			CommonConvert(Burn_Data, prop,EEPROM_Medium);
 		}
 		catch (const exception& ex)
@@ -402,21 +418,21 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 	Json::Value CheckSum_Object;
 	Json::Value checksum_UsedRange;
 	Json::Value checksum_Addr;
-	for (int i = 0; i < m_vecCheckSumRange.size(); i++)
+	for (int i = 0; i < m_CheckSumRangeExcel.m_vecData.size(); i++)
 	{
 		Json::Value range;
-		range["start"] = m_vecCheckSumRange[i][0];
-		range["end"] = m_vecCheckSumRange[i][1];
+		range["start"] = m_CheckSumRangeExcel.m_vecData[i][0];
+		range["end"] = m_CheckSumRangeExcel.m_vecData[i][1];
 		checksum_UsedRange.append(range);
 	}
 	CheckSum_Object["UsedRange"] = checksum_UsedRange;		//checksum使用到的区间
 
 	try
 	{
-		if (!m_vecCheckSumAddr.empty())
+		if (!m_CheckSumAddrExcel.m_vecData.empty())
 		{
 			//存在checksum地址
-			if (m_vecCheckSumRange.empty())
+			if (m_CheckSumRangeExcel.m_vecData.empty())
 			{
 				string str_log = (boost::format("%s [ERROR]: 要配置checksum的地址,必须配置checksum所需要用到的空间") % __FUNCTION__).str();
 				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
@@ -424,17 +440,17 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 			}
 
 			int i_checksum_addr = 0;
-			sscanf(m_vecCheckSumAddr[0][0].c_str(), "%x", &i_checksum_addr);
+			sscanf(m_CheckSumAddrExcel.m_vecData[0][0].c_str(), "%x", &i_checksum_addr);
 
 			int i_checksum_length = 0;
-			sscanf(m_vecCheckSumAddr[0][1].c_str(), "%d", &i_checksum_length);
+			sscanf(m_CheckSumAddrExcel.m_vecData[0][1].c_str(), "%d", &i_checksum_length);
 
 			int order_type = -1;
-			if (m_vecCheckSumAddr[0][2] == "L")
+			if (m_CheckSumAddrExcel.m_vecData[0][2] == "L")
 				order_type = 0;
-			else if (m_vecCheckSumAddr[0][2] == "H_L")
+			else if (m_CheckSumAddrExcel.m_vecData[0][2] == "H_L")
 				order_type = 1;
-			else if (m_vecCheckSumAddr[0][2] == "L_H")
+			else if (m_CheckSumAddrExcel.m_vecData[0][2] == "L_H")
 				order_type = 2;
 
 			char buff[256];
@@ -470,14 +486,14 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 				break;
 			}
 			CheckSum_Object["CheckSum_Addr"] = checksum_Addr;	//记录checksum用到了哪些地址
-			string str_cal_type = m_vecCheckSumAddr[0][3];
+			string str_cal_type = m_CheckSumAddrExcel.m_vecData[0][3];
 			str_cal_type = str_cal_type.substr(0, 1);
 			CheckSum_Object["CheckSumType"] = boost::lexical_cast<int>(str_cal_type);
 		}
 		else
 		{
 			//不存在checksum地址
-			if (!m_vecCheckSumRange.empty())
+			if (!m_CheckSumRangeExcel.m_vecData.empty())
 			{
 				//存在checksum计算区间 - 不能成立
 				string str_log = (boost::format("%s [ERROR]: 用户配置了checksum的区间却没有配置checksum的地址,如果不需要配置chekcsum请不要填写checksum的区间") % __FUNCTION__).str();
@@ -503,19 +519,19 @@ void BurnRule_UI::ShowCheckSumAddr()
 	ui.m_ChecksumAddrTable->clearSpans();		//清空所有的合并
 	ui.m_ChecksumAddrTable->clear();
 	ui.m_ChecksumAddrTable->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
-	int rows = m_vecCheckSumAddr.size();
+	int rows = m_CheckSumAddrExcel.m_vecData.size();
 	ui.m_ChecksumAddrTable->setRowCount(rows);
-	int cols = m_vecCheckSumAddrHeaderLabels.size();
+	int cols = m_CheckSumAddrExcel.m_vecHeaderLabels.size();
 	ui.m_ChecksumAddrTable->setColumnCount(cols);
 
 	QStringList list_headerLabels;
-	for (const auto& label : m_vecCheckSumAddrHeaderLabels)
+	for (const auto& label : m_CheckSumAddrExcel.m_vecHeaderLabels)
 		list_headerLabels.push_back(QString::fromLocal8Bit(label.c_str()));
 	ui.m_ChecksumAddrTable->setHorizontalHeaderLabels(list_headerLabels);
 
 	for (int row = 0; row < rows; row++)
 		for (int col = 0; col < cols; col++)
-			ui.m_ChecksumAddrTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_vecCheckSumAddr[row][col].c_str())));
+			ui.m_ChecksumAddrTable->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_CheckSumAddrExcel.m_vecData[row][col].c_str())));
 
 	//数据有效性检查
 	for (int row = 0; row < rows; row++)
@@ -571,7 +587,7 @@ void BurnRule_UI::callback_BurnRlueCurrentItemChanged(QTableWidgetItem* cur, QTa
 		m_iLastCol = cur->column();
 		if (cur->column() == 3)
 		{
-			MyCombox* com = new MyCombox(m_QlistSplit,cur->text(), m_vecBurnRule[m_iLastRow][m_iLastCol], this,BurnRule);
+			MyCombox* com = new MyCombox(m_QlistSplit,cur->text(), m_BurnItem->m_BurnRlueExcel.m_vecData[m_iLastRow][m_iLastCol], this,BurnRule);
 			ui.m_BurnRuleTable->setCellWidget(cur->row(), 3, com);
 		}
 	}
@@ -618,12 +634,12 @@ void BurnRule_UI::callback_ChecksumAddrCurrentItemChanged(QTableWidgetItem* cur,
 		m_iLastCol = cur->column();
 		if (cur->column() == 2)
 		{
-			MyCombox* com = new MyCombox(m_QlistChecksumAddrOrder, cur->text(), m_vecCheckSumAddr[m_iLastRow][2], this, ChecksumAddr);
+			MyCombox* com = new MyCombox(m_QlistChecksumAddrOrder, cur->text(), m_CheckSumAddrExcel.m_vecData[m_iLastRow][2], this, ChecksumAddr);
 			ui.m_ChecksumAddrTable->setCellWidget(cur->row(), 2, com);
 		}
 		else if (cur->column() == 3)
 		{
-			MyCombox* com = new MyCombox(m_QlistChecksumCalType, cur->text(), m_vecCheckSumAddr[m_iLastRow][3], this, ChecksumAddr);
+			MyCombox* com = new MyCombox(m_QlistChecksumCalType, cur->text(), m_CheckSumAddrExcel.m_vecData[m_iLastRow][3], this, ChecksumAddr);
 			ui.m_ChecksumAddrTable->setCellWidget(cur->row(), 3, com);
 		}
 	}
@@ -633,7 +649,7 @@ void BurnRule_UI::callback_BurnRuleItemChanged(QTableWidgetItem* item)
 {
 	int row = item->row();
 	int col = item->column();
-	m_vecBurnRule[row][col] = item->text().toLocal8Bit().data();
+	m_BurnItem->m_BurnRlueExcel.m_vecData[row][col] = item->text().toLocal8Bit().data();
 	ShowExcel(BurnRule);
 }
 
@@ -641,7 +657,7 @@ void BurnRule_UI::callback_ChecksumRangeItemChanged(QTableWidgetItem* item)
 {
 	int row = item->row();
 	int col = item->column();
-	m_vecCheckSumRange[row][col] = item->text().toLocal8Bit().data();
+	m_CheckSumRangeExcel.m_vecData[row][col] = item->text().toLocal8Bit().data();
 	ShowExcel(CheckSumRange);
 }
 
@@ -649,7 +665,7 @@ void BurnRule_UI::callback_ChecksumAddrItemChanged(QTableWidgetItem* item)
 {
 	int row = item->row();
 	int col = item->column();
-	m_vecCheckSumAddr[row][col] = item->text().toLocal8Bit().data();
+	m_CheckSumAddrExcel.m_vecData[row][col] = item->text().toLocal8Bit().data();
 	ShowExcel(ChecksumAddr);
 }
 
@@ -693,6 +709,6 @@ void BurnRule_UI::callback_DataSourceCurrentTextChanged(QString qstr)
 {
 	if (m_iLastRow == -1)
 		return;
-	m_vecBurnRule[m_iLastRow][2] = qstr.toLocal8Bit().data();
+	m_BurnItem->m_BurnRlueExcel.m_vecData[m_iLastRow][2] = qstr.toLocal8Bit().data();
 	ShowBurnRuleExcel();
 }

@@ -5,17 +5,22 @@
 #include <QKeyEvent>
 #include <QMenu>
 
-BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,EEPROM_INIT* p_init, QWidget *parent)
-	: QWidget(parent), m_GuideInfo(guide_info), m_pInitWidget(p_init)
+BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,EEPROM_INIT* p_init, string station_name,QWidget *parent)
+	: QWidget(parent), 
+	m_GuideInfo(guide_info),	//总的OTP Guide的数据
+	m_pInitWidget(p_init),		//初始化窗口的指针
+	m_BurnExcel(guide_info.m_mapBurnAddrs[station_name])	//烧录地址的excel
 {
 	ui.setupUi(this);
 	ui.m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+	if (m_BurnExcel.m_vecHeaderLabels.empty())
+		boost::assign::push_back(m_BurnExcel.m_vecHeaderLabels)("烧录开始地址")("烧录结束地址");
+	
 	m_pMenuCheckSumConfig = new QMenu(ui.m_ChecksumConfigtabWidget);
 	QAction* p_DeleteCheckSumConfig = new QAction(QString::fromLocal8Bit("删除当前checksum数据来源"), this);
 	m_pMenuCheckSumConfig->addAction(p_DeleteCheckSumConfig);
 	connect(p_DeleteCheckSumConfig, &QAction::triggered, this, &BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig);
-
 }
 
 BurnAddrsAndChecksum::~BurnAddrsAndChecksum()
@@ -36,7 +41,7 @@ void BurnAddrsAndChecksum::ShowExcel()
 	ui.m_tableWidget->clearSpans();		//清空所有的合并
 	ui.m_tableWidget->clearContents();
 	ui.m_tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
-	ui.m_tableWidget->setRowCount(m_vecBurnAddrs.size());
+	ui.m_tableWidget->setRowCount(m_BurnExcel.m_vecData.size());
 	ui.m_tableWidget->setColumnCount(2);
 
 	/*QStringList list_headerLabels;
@@ -44,11 +49,11 @@ void BurnAddrsAndChecksum::ShowExcel()
 		list_headerLabels.push_back(QString::fromLocal8Bit(label.c_str()));
 	ui.m_BurnRuleTable->setHorizontalHeaderLabels(list_headerLabels);*/
 
-	for (int row = 0; row < m_vecBurnAddrs.size(); row++)
+	for (int row = 0; row < m_BurnExcel.m_vecData.size(); row++)
 		for (int col = 0; col < 2; col++)
 		{
-			ui.m_tableWidget->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_vecBurnAddrs[row][col].c_str())));
-			if (!IsHex(m_vecBurnAddrs[row][col]))
+			ui.m_tableWidget->setItem(row, col, new QTableWidgetItem(QString::fromLocal8Bit(m_BurnExcel.m_vecData[row][col].c_str())));
+			if (!IsHex(m_BurnExcel.m_vecData[row][col]))
 				ui.m_tableWidget->item(row, col)->setBackgroundColor(Qt::red);
 			else
 				ui.m_tableWidget->item(row, col)->setBackgroundColor(Qt::green);
@@ -62,22 +67,40 @@ void BurnAddrsAndChecksum::keyPressEvent(QKeyEvent * k)
 	{
 		if (ui.m_tableWidget->hasFocus())		//如果烧录地址窗口有焦点,则往烧录规则表格中插入
 		{
-			int cur_row = ui.m_tableWidget->currentRow();
-			if (cur_row == -1)
-			{
-				vector<string> vec_tmp;
-				boost::assign::push_back(vec_tmp)("0x")("0x");
-				m_vecBurnAddrs.push_back(vec_tmp);
-			}
-			else
-			{
-				vector<string> vec_tmp;
-				boost::assign::push_back(vec_tmp)("0x")("0x");
-				m_vecBurnAddrs.insert(m_vecBurnAddrs.begin() + cur_row, vec_tmp);
-			}
+			InsertOneRow();
 			ShowExcel();
 		}
 	}
+	if (k->key() == Qt::Key_Delete)
+	{
+		if (m_iLastSelectRow == -1)
+		{
+			string str_log = (boost::format("%s[ERROR]:未选中某行,不能删除") % __FUNCTION__).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return;
+		}
+		if (m_iLastSelectRow == 0 && m_BurnExcel.m_vecData.empty())
+		{
+			string str_log = (boost::format("%s[ERROR]:当前已经没有数据可以删除了") % __FUNCTION__).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return;
+		}
+		m_BurnExcel.m_vecData.erase(m_BurnExcel.m_vecData.begin() + m_iLastSelectRow);
+		ShowExcel();
+		return;
+	}
+}
+
+bool BurnAddrsAndChecksum::InsertOneRow()
+{
+	auto selectItems = ui.m_tableWidget->selectedItems();
+	vector<string> vec_tmp;
+	boost::assign::push_back(vec_tmp)("0x")("0x");
+	if (selectItems.size() == 0)
+		m_BurnExcel.m_vecData.push_back(vec_tmp);
+	else if (selectItems.size() == 1)
+		m_BurnExcel.m_vecData.insert(m_BurnExcel.m_vecData.begin() + selectItems[0]->row(), vec_tmp);
+	return true;
 }
 
 void BurnAddrsAndChecksum::callback_BurnAddrWidgetItemChanged(QTableWidgetItem* item)
@@ -85,7 +108,7 @@ void BurnAddrsAndChecksum::callback_BurnAddrWidgetItemChanged(QTableWidgetItem* 
 	int row = item->row();
 	int col = item->column();
 	string m_str = item->text().toLocal8Bit().data();
-	m_vecBurnAddrs[row][col] = m_str;
+	m_BurnExcel.m_vecData[row][col] = m_str;
 	ShowExcel();
 }
 
@@ -113,4 +136,10 @@ void BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig()
 	m_GuideInfo.m_vecSpaceUsageCheckSum.erase(iter);	//删除该迭代器
 	ui.m_ChecksumConfigtabWidget->removeTab(cur_select_index);
 	m_pInitWidget->UpdataWidget();
+}
+
+void BurnAddrsAndChecksum::callback_ItemClicked(QTableWidgetItem* item)
+{
+	m_iLastSelectRow = item->row();
+	m_iLastSelectCol = item->column();
 }

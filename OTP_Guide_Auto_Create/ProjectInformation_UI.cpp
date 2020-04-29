@@ -2,9 +2,9 @@
 #include "ProjectInformation_UI.h"
 
 
-ProjectInformation_UI::ProjectInformation_UI(OTPGuideInfo& guide_info, QWidget *parent):Qt_Excel(guide_info.m_vecProjectInfo)
+ProjectInformation_UI::ProjectInformation_UI(OTPGuideInfo& guide_info, QWidget *parent):Qt_Excel(guide_info.m_vecProjectInfo), m_GuideInfo(guide_info)
 {
-	HideTextDesc();
+	//HideTextDesc();
 	boost::assign::push_back(m_vecImportantNames)("机种名称")("模组类型")("Sensor")("烧录介质")("平台");	//关键的字段
 	boost::assign::push_back(m_vecHeaderLabels)("内容")("信息")("备注");	//表头
 	
@@ -107,19 +107,39 @@ void ProjectInformation_UI::callback_itemClicked(QTableWidgetItem* item)
 		else
 			ui.m_textEdit->setEnabled(true);
 	}
-	else if (m_iLastSelectCol == 1)
-	{
-		if (ui.m_tableWidget->item(m_iLastSelectRow, 0)->text() == QString::fromLocal8Bit("机种名称"))
-		{
-			ui.m_textEdit->setEnabled(false);
-			ui.m_tableWidget->setFocus();
-			return;
-		}
-		else
-			ui.m_textEdit->setEnabled(true);
-	}
+	//else if (m_iLastSelectCol == 1)
+	//{
+	//	if (ui.m_tableWidget->item(m_iLastSelectRow, 0)->text() == QString::fromLocal8Bit("机种名称"))
+	//	{
+	//		ui.m_textEdit->setEnabled(false);
+	//		ui.m_tableWidget->setFocus();
+	//		return;
+	//	}
+	//	else
+	//		ui.m_textEdit->setEnabled(true);
+	//}
 	else
 		ui.m_textEdit->setEnabled(true);
 	
 	Qt_Excel::callback_itemClicked(item);
+}
+
+void ProjectInformation_UI::callback_textChanged()
+{
+	/*if (ui.m_tableWidget->rowCount() == 0)
+		return;
+	auto str = ui.m_textEdit->document()->toPlainText();
+	if (m_iLastSelectCol < 0 || m_iLastSelectCol >= m_outExcel.m_vecHeaderLabels.size())
+	{
+		string str_log = (boost::format("当前修改的第%d行,第%d列,但是当前软件并没有维护到该列") % m_iLastSelectRow % m_iLastSelectCol).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}*/
+	Qt_Excel::callback_textChanged();	//将界面上的数据,刷新到结构体中
+	if (m_outExcel.m_vecData.empty())
+		return;
+	if (m_outExcel.m_vecData[m_iLastSelectRow][0] == "机种名称")
+		if (m_iLastSelectCol == 1)
+			m_GuideInfo.m_strProjectName = m_outExcel.m_vecData[m_iLastSelectRow][1];
+		
 }

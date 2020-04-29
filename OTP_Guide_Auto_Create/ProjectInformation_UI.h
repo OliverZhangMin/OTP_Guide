@@ -13,11 +13,11 @@ public:
 	~ProjectInformation_UI();
 	virtual void ShowExcel() override;
 private:
+	OTPGuideInfo& m_GuideInfo;
 	std::vector<std::string> m_vecImportantNames;
 	std::vector<std::string> m_vecHeaderLabels;
 protected slots:
 	virtual void callback_itemClicked(QTableWidgetItem*) override;
-	/*virtual void callback_itemSelectionChanged();
-	virtual void callback_cellClicked(int row, int col) override;*/
+	virtual void callback_textChanged();
 };
 

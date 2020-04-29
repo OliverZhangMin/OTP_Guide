@@ -36,7 +36,7 @@ class BurnRule_UI : public QWidget
 	Q_OBJECT
 
 public:
-	BurnRule_UI(BurnItem& burnItem,QWidget *parent = Q_NULLPTR);
+	BurnRule_UI(std::shared_ptr<BurnItem> burnItem,QWidget *parent = Q_NULLPTR);
 	~BurnRule_UI();
 	void ShowExcel(UI_TYPE type);
 	void ShowBurnRuleExcel();
@@ -45,6 +45,7 @@ public:
 	bool GetRuleJson(Json::Value& out_json);
 	bool CommonConvert(Json::Value& out_json, const CSubBurnProp& prop, BurnMedium);
 private:
+	std::shared_ptr<BurnItem> m_BurnItem;
 	Ui::BurnRule_UI ui;
 	std::map<std::string, std::string> m_mapJsonBurnKeyString;
 	std::map<std::string, std::vector<std::string>> m_mapVecJsonStruct;
@@ -54,12 +55,16 @@ private:
 	QList<QString> m_QlistChecksumAddrOrder;	//chekcsum计算数据后拆分排序
 	QList<QString> m_QlistChecksumCalType;		//checksum计算类型
 
-	std::vector<std::vector<std::string>>& m_vecBurnRule;	
-	std::vector<std::vector<std::string>>& m_vecCheckSumRange;
-	std::vector<std::vector<std::string>>& m_vecCheckSumAddr;
-	std::vector<std::string>& m_vecBurnRuleHeaderLabels;
-	std::vector<std::string>& m_vecCheckSumRangeHeaderLabels;
-	std::vector<std::string>& m_vecCheckSumAddrHeaderLabels;
+	ExcelProp& m_BurnRlueExcel;
+	ExcelProp& m_CheckSumRangeExcel;
+	ExcelProp& m_CheckSumAddrExcel;
+	ExcelProp& m_CheckSumDataSource;
+	//std::vector<std::vector<std::string>>& m_vecBurnRule;	
+	//std::vector<std::vector<std::string>>& m_vecCheckSumRange;
+	//std::vector<std::vector<std::string>>& m_vecCheckSumAddr;
+	//std::vector<std::string>& m_vecBurnRuleHeaderLabels;
+	//std::vector<std::string>& m_vecCheckSumRangeHeaderLabels;
+	//std::vector<std::string>& m_vecCheckSumAddrHeaderLabels;
 
 	QLineEdit* p_lineEdit = nullptr;
 protected:
@@ -80,7 +85,6 @@ private slots:
 	void callback_ChecksumAddrCurrentItemChanged(QTableWidgetItem*, QTableWidgetItem*);
 	void callback_ChecksumAddrItemChanged(QTableWidgetItem*);	//刷新数据结构用
 };
-
 
 class MyCombox :public QComboBox
 {

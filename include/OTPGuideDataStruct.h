@@ -9,6 +9,7 @@
 #include <math.h>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <boost/archive/binary_oarchive.hpp> 
 #include <boost/archive/binary_iarchive.hpp> 
@@ -71,9 +72,9 @@ struct ContentData_TextImage
 struct BurnItem_SubContent
 {
 	string subTitle;
-	vector<ContentData_TextImage> burnContentBeforeExcel;
+	vector<ContentData_TextImage> burnContentBeforeExcel;		//未用到
 	ExcelProp m_burnExcelTable;
-	vector<ContentData_TextImage> burnContentAfterExcel;
+	vector<ContentData_TextImage> burnContentAfterExcel;		//未用到
 
 	friend class boost::serialization::access;
 	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
@@ -82,26 +83,29 @@ struct BurnItem_SubContent
 		ar & burnContentBeforeExcel;
 		ar & burnContentAfterExcel;
 	}
-
 };
 
 struct BurnItem
 {
 	string title;
-	//string content;
-	vector<ContentData_TextImage> contentBeforeSubContent;
-	vector<BurnItem_SubContent> burnItemSubContents;
+	vector<ContentData_TextImage> contentBeforeSubContent;		//表单最开始的字符串数据
+	vector<BurnItem_SubContent> burnItemSubContents;			//每个算法模块下,不同的配置参数
 
-	std::vector<std::vector<std::string>> m_vecBurnRule;
-	std::vector<std::vector<std::string>> m_vecCheckSumRange;
-	std::vector<std::vector<std::string>> m_vecCheckSumAddr;
+	ExcelProp m_BurnRlueExcel;				//烧录规则表格
+	ExcelProp m_CheckSumRangeExcel;			//checksum用到的范围
+	ExcelProp m_CheckSumAddrExcel;			//checksum地址的配置
+	ExcelProp m_CheckSumDataSourceRnage;	//checksum数据来源配置
 
-	std::vector<std::string> m_vecBurnRuleHeaderLabels;
-	std::vector<std::string> m_vecCheckSumRangeHeaderLabels;
-	std::vector<std::string> m_vecCheckSumAddrHeaderLabels;
+	//std::vector<std::vector<std::string>> m_vecBurnRule;
+	//std::vector<std::vector<std::string>> m_vecCheckSumRange;
+	//std::vector<std::vector<std::string>> m_vecCheckSumAddr;
 
-	std::vector<std::vector<std::string>> m_vecEEPROM_ChecksumRnage;		//checksum用到的地址范围
-	std::vector<std::vector<std::string>> m_vecSharedMemory_ChecksumRnage;
+	//std::vector<std::string> m_vecBurnRuleHeaderLabels;
+	//std::vector<std::string> m_vecCheckSumRangeHeaderLabels;
+	//std::vector<std::string> m_vecCheckSumAddrHeaderLabels;
+
+
+	//std::vector<std::vector<std::string>> m_vecChecksumDataSourceRnage;		//checksum用到的地址范围
 
 
 	friend class boost::serialization::access;
@@ -152,18 +156,36 @@ struct EEPROMAddrExcelProp
 	}
 };
 
+struct EEPROM_InitInfo
+{
+	string m_str_eeprom_slaveid = "";
+	string m_str_sensor_slaveid = "";
+	string m_str_DefaultVal = "";
+	//写保护部分
+	bool m_bProtectEnable = false;
+	string m_str_protect_slaveid = "";
+	string m_str_protectAddr = "";
+	string m_str_protectVal = "";
+	string m_str_ProtectIICMode = "";
+	//EFlash部分
+
+};
+
 struct OTPGuideInfo
 {
 	string m_strProjectName;
-	vector<pair<string,ExcelProp>> m_VecBurnStationAddr;
-	ExcelProp m_vecChangeHistroy;
-	ExcelProp m_vecProjectInfo;
-	vector<BurnItem> m_vecBurnItems;
+	//vector<pair<string,ExcelProp>> m_VecBurnStationAddr;	//结构体修改
+	map<string, ExcelProp> m_mapBurnAddrs;				//结构体修改,修改后版本,(烧录站别的地址)
+	map<string, vector<string>> m_mapVecNeedBurnName;	//每个烧录站别会烧录的模块,(烧录站别的模块)
+	ExcelProp m_vecChangeHistroy;						
+	ExcelProp m_vecProjectInfo;							//(项目信息)
+	vector<std::shared_ptr<BurnItem>> m_vecBurnItems;	//(模块配置)
 	vector<string> m_vecAgreeOnInfo;
-	EEPROMAddrExcelProp m_EEPROMAddrExcel;
-
+	EEPROMAddrExcelProp m_EEPROMAddrExcel;		
+	EEPROM_InitInfo m_eepromInfo;
 	vector<string> m_vecSpaceUsageCheckSum;		//目前被配置使用的checksum名字
-	
+	vector<string> m_vecSpaceUsageBurnModel;		//目前未配置的烧录模块
+
 	bool m_bIsChanged = false;
 	int m_iDefaultValue = 0;
 
@@ -177,10 +199,5 @@ struct OTPGuideInfo
 		ar & m_EEPROMAddrExcel;
 		ar & m_bIsChanged;
 	}
-
 };
-
-
-
-
 #endif

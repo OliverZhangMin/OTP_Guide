@@ -2,10 +2,6 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_OTP_Guide_Auto_Create.h"
-#include "EEPROM_Addr_Map.h"
-#include "EEPROM_INIT.h"
-#include "ProjectInformation_UI.h"
-#include "TestItemContainer_UI.h"
 #include <memory>
 #include <string>
 #include <map>
@@ -29,4 +25,5 @@ private:
 private slots:
 	void callback_currentChanged(int);
 	void callback_GenerateOTPGuide();
+	void SaveConfig();
 };

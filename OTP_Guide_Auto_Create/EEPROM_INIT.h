@@ -23,6 +23,8 @@ private slots:
 	void callback_BurnStationAddrWidget_customContextMenuRequested(QPoint);
 	void BurnStationInsert();
 	void callback_textChanged(QString);
-	void callback_textChangedBurnDefaultVal(QString);
 	void callback_doubleClicked(QModelIndex);	//双击按下 未配置checksum的模块 的列表框
+	void callback_ConfigBurnModelDoubleClicked(QModelIndex);
+	void callback_ProtectcheckboxClick(bool);
+	void callback_ProtectTextChanged(QString);
 };

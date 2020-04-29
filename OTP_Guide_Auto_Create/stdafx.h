@@ -16,6 +16,7 @@
 #include <sstream>
 #include <fstream>
 #include <Windows.h>
+#include <json.h>
 //ss
 //判断是否是16进制的字符串
 bool IsHex(const string& str);
@@ -26,3 +27,8 @@ wstring string2wstring(string str);
 
 //将wstring转换成string  
 string wstring2string(wstring wstr);
+
+bool GetJsonByExcelProp(Json::Value&,const ExcelProp&);
+bool GetExcelPropByJson(const Json::Value&, ExcelProp&);
+
+bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out);

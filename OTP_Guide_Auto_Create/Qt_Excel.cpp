@@ -61,6 +61,22 @@ void Qt_Excel::keyPressEvent(QKeyEvent * k)
 	}
 	if (k->key() == Qt::Key_Delete)
 	{
+		if (m_iLastSelectRow == -1)
+		{
+			string str_log = (boost::format("%s[ERROR]:未选中某行,不能删除") % __FUNCTION__).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return;
+		}
+		if (m_iLastSelectRow == 0 && m_outExcel.m_vecData.empty())
+		{
+			string str_log = (boost::format("%s[ERROR]:当前已经没有数据可以删除了") % __FUNCTION__).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return;
+		}
+		if (m_iLastSelectRow >= m_outExcel.m_vecData.size())	//如果选中的行数,大于了当前数据结构的总长度,那么直接无视即可
+		{
+			return;
+		}
 		m_outExcel.m_vecData.erase(m_outExcel.m_vecData.begin() + m_iLastSelectRow);
 		ShowExcel();
 		return;
@@ -106,11 +122,11 @@ void Qt_Excel::ShowExcel()
 	//connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChanged(QTableWidgetItem*)));
 }
 
-void Qt_Excel::HideTextDesc()
-{
-	ui.m_textEdit_remark->setMaximumSize(QSize(0, 0));
-	ui.m_label_desc->setMaximumSize(QSize(0, 0));
-}
+//void Qt_Excel::HideTextDesc()
+//{
+//	ui.m_textEdit_remark->setMaximumSize(QSize(0, 0));
+//	ui.m_label_desc->setMaximumSize(QSize(0, 0));
+//}
 
 void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
 {
@@ -126,6 +142,8 @@ void Qt_Excel::callback_itemClicked(QTableWidgetItem* item)
 
 void Qt_Excel::callback_textChanged()
 {
+	if (ui.m_tableWidget->rowCount() == 0)
+		return;
 	auto str = ui.m_textEdit->document()->toPlainText();
 	if (m_iLastSelectCol < 0 || m_iLastSelectCol >= m_outExcel.m_vecHeaderLabels.size())
 	{

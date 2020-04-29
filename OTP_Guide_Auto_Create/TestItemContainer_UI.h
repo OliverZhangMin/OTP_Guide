@@ -23,4 +23,5 @@ private:
 private slots:
 	void callback_customContextMenuRequested(QPoint);
 	void TestItemInsert();
+	void DeleteTestItem();
 };
