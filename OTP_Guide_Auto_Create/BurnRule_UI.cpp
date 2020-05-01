@@ -251,6 +251,12 @@ void BurnRule_UI::ShowBurnRuleExcel()
 					ui.m_BurnRuleTable->item(row, col)->setBackgroundColor(Qt::green);
 			}
 		}
+
+	//字体居中
+	for (int i = 0; i < rows; i++)
+		for (int j = 0; j < cols; j++)
+			ui.m_BurnRuleTable->item(i, j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 	connect(ui.m_BurnRuleTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_BurnRuleItemChanged(QTableWidgetItem*)));
 }
 
@@ -285,6 +291,12 @@ void BurnRule_UI::ShowCheckSumRange()
 				ui.m_CalSumRangeTable->item(row, col)->setBackgroundColor(Qt::green);
 			
 		}
+
+	//字体居中
+	for (int i = 0; i < rows; i++)
+		for (int j = 0; j < cols; j++)
+			ui.m_CalSumRangeTable->item(i, j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 	connect(ui.m_CalSumRangeTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_ChecksumRangeItemChanged(QTableWidgetItem*)));
 }
 
@@ -427,6 +439,24 @@ bool BurnRule_UI::GetRuleJson(Json::Value& out_json)
 	}
 	CheckSum_Object["UsedRange"] = checksum_UsedRange;		//checksum使用到的区间
 
+	Json::Value checksum_BurnRange;			//checksum的共享内存区间
+	Json::Value checksum_ReadRange;
+
+	for (const auto& data_source : m_BurnItem->m_CheckSumDataSourceRnage.m_vecData)
+	{
+		Json::Value range;
+		range["start"] = data_source[0];
+		range["end"] = data_source[1];
+
+		if (data_source[2] == "EEPROM")
+			checksum_ReadRange.append(range);
+		else if (data_source[2] == "共享内存")
+			checksum_BurnRange.append(range);
+	}
+
+	CheckSum_Object["BurnRange"] = checksum_BurnRange;
+	CheckSum_Object["ReadRange"] = checksum_ReadRange;
+
 	try
 	{
 		if (!m_CheckSumAddrExcel.m_vecData.empty())
@@ -560,6 +590,12 @@ void BurnRule_UI::ShowCheckSumAddr()
 					ui.m_ChecksumAddrTable->item(row, col)->setBackgroundColor(Qt::green);
 			}
 		}
+
+	//字体居中
+	for (int i = 0; i < rows; i++)
+		for (int j = 0; j < cols; j++)
+			ui.m_ChecksumAddrTable->item(i, j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 	connect(ui.m_ChecksumAddrTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_ChecksumAddrItemChanged(QTableWidgetItem*)));
 }
 

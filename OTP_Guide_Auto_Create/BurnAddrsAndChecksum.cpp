@@ -6,10 +6,11 @@
 #include <QMenu>
 
 BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,EEPROM_INIT* p_init, string station_name,QWidget *parent)
-	: QWidget(parent), 
+	: CMyWidgetBase(parent), 
 	m_GuideInfo(guide_info),	//总的OTP Guide的数据
 	m_pInitWidget(p_init),		//初始化窗口的指针
-	m_BurnExcel(guide_info.m_mapBurnAddrs[station_name])	//烧录地址的excel
+	m_BurnExcel(guide_info.m_mapStationInfo[station_name].m_BurnAddrsExcel),	//烧录地址的excel
+	m_strStationName(station_name)
 {
 	ui.setupUi(this);
 	ui.m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -21,6 +22,34 @@ BurnAddrsAndChecksum::BurnAddrsAndChecksum(OTPGuideInfo& guide_info,EEPROM_INIT*
 	QAction* p_DeleteCheckSumConfig = new QAction(QString::fromLocal8Bit("删除当前checksum数据来源"), this);
 	m_pMenuCheckSumConfig->addAction(p_DeleteCheckSumConfig);
 	connect(p_DeleteCheckSumConfig, &QAction::triggered, this, &BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig);
+
+
+	m_pMenuBurnItem = new QMenu(ui.m_BurnModellistWidget);
+	QAction* p_DeleteBurnItem = new QAction(QString::fromLocal8Bit("删除此烧录项目"), this);
+	m_pMenuBurnItem->addAction(p_DeleteBurnItem);
+	connect(p_DeleteBurnItem, &QAction::triggered, this, &BurnAddrsAndChecksum::callback_DeleteBurnItem);
+
+	//要烧录的模块显示
+	if (m_GuideInfo.m_mapStationInfo.find(station_name) != m_GuideInfo.m_mapStationInfo.end())
+		for (const auto& item_name : m_GuideInfo.m_mapStationInfo[station_name].m_VecNeedBurnName)
+			ui.m_BurnModellistWidget->addItem(QString::fromLocal8Bit(item_name.c_str()));
+
+	//checksum的配置模块显示
+	for (const auto& checksum_item_name : guide_info.m_mapStationInfo[station_name].m_VecNeedChecksumName)
+	{
+		string algo_name = checksum_item_name;
+		auto iter = std::find_if(m_GuideInfo.m_vecBurnItems.begin(), m_GuideInfo.m_vecBurnItems.end(), [algo_name](std::shared_ptr<BurnItem> p_item)
+		{
+			return p_item->title == algo_name;
+		});
+		if (iter != m_GuideInfo.m_vecBurnItems.end())
+		{
+			ChecksumConfigurate_ui* p_checksumConfig = new ChecksumConfigurate_ui(**iter);
+			//m_GuideInfo.m_mapVecNeedChecksumName[m_strStationName].push_back(algo_name);
+			ui.m_ChecksumConfigtabWidget->addTab(p_checksumConfig, QString::fromLocal8Bit(algo_name.c_str()));
+		}
+	}
+	ShowExcel();
 }
 
 BurnAddrsAndChecksum::~BurnAddrsAndChecksum()
@@ -32,7 +61,18 @@ void BurnAddrsAndChecksum::AddCheckSumConfigInfo(BurnItem& item)
 {
 	ChecksumConfigurate_ui* p_checksumConfig = new ChecksumConfigurate_ui(item);
 	string algo_name = item.title;
+	//m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.push_back(algo_name);
 	ui.m_ChecksumConfigtabWidget->addTab(p_checksumConfig , QString::fromLocal8Bit(algo_name.c_str()));
+}
+
+void BurnAddrsAndChecksum::UpdataWidget()
+{
+	ShowExcel();
+	ui.m_BurnModellistWidget->clear();
+	for (const auto& names : m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedBurnName)
+		ui.m_BurnModellistWidget->addItem(QString::fromLocal8Bit(names.c_str()));
+	for (int i = 0; i < ui.m_ChecksumConfigtabWidget->count(); i++)
+		((CMyWidgetBase*)ui.m_ChecksumConfigtabWidget->widget(i))->UpdataWidget();
 }
 
 void BurnAddrsAndChecksum::ShowExcel()
@@ -122,19 +162,55 @@ void BurnAddrsAndChecksum::callback_DeleteCurrentCheckSumConfig()
 	int cur_select_index = ui.m_ChecksumConfigtabWidget->currentIndex();
 	if (cur_select_index == -1)
 	{
-		string str_log = (boost::format("%s[ERROR]:当前没有选择的tab,无法删除")%__FUNCTION__).str();
+		string str_log = (boost::format("%s[ERROR]:当前没有选择的tab,无法删除") % __FUNCTION__).str();
 		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 		return;
 	}
 	string algo_name = ui.m_ChecksumConfigtabWidget->tabText(cur_select_index).toLocal8Bit().data();	//获取当前选中的tab的名字
-	
-	auto iter = std::find_if(m_GuideInfo.m_vecSpaceUsageCheckSum.begin(), m_GuideInfo.m_vecSpaceUsageCheckSum.end(), [algo_name](string& str)	// 找到该tab名字对应的占用chekcsum容器中的迭代器位置
+
+	auto iter = std::find_if(m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.begin(), m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.end(), 
+		[algo_name](string& str)	// 找到该tab名字对应的占用chekcsum容器中的迭代器位置
 	{
 		return algo_name == str;
 	}
 	);
-	m_GuideInfo.m_vecSpaceUsageCheckSum.erase(iter);	//删除该迭代器
+	m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.erase(iter);	//删除该迭代器
+
+
+	////删除当前测试站别下需要用到的checksum配置界面
+	//auto iter2 = std::find_if(m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.begin(), m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.end(), [algo_name](string& str)	// 找到该tab名字对应的占用chekcsum容器中的迭代器位置
+	//{
+	//	return algo_name == str;
+	//}
+	//);
+	//m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedChecksumName.erase(iter2);
+
 	ui.m_ChecksumConfigtabWidget->removeTab(cur_select_index);
+	m_pInitWidget->UpdataWidget();
+}
+
+void BurnAddrsAndChecksum::callback_BurnItemCustomContextMenuRequested(QPoint pt)
+{
+	m_pMenuBurnItem->popup(ui.m_BurnModellistWidget->mapToGlobal(pt));
+}
+
+void BurnAddrsAndChecksum::callback_DeleteBurnItem()
+{
+	if (ui.m_BurnModellistWidget->currentRow() == -1)
+	{
+		string str_log = (boost::format("%s[ERROR]:没有选择正确测试项目,不能删除") % __FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	string str_current_test_item = ui.m_BurnModellistWidget->currentItem()->text().toLocal8Bit().data();
+	auto& vec_items = m_GuideInfo.m_mapStationInfo[m_strStationName].m_VecNeedBurnName;
+	auto iter = std::find_if(vec_items.begin(), vec_items.end(), [str_current_test_item](string str)
+	{
+		return str == str_current_test_item;
+	});
+	if(vec_items.end() != iter)
+		vec_items.erase(iter);
+//	m_GuideInfo.m_vecSpaceUsageBurnModel.push_back(str_current_test_item);
 	m_pInitWidget->UpdataWidget();
 }
 

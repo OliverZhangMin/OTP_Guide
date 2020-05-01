@@ -58,6 +58,12 @@
      </item>
      <item>
       <widget class="QListWidget" name="m_ImglistWidget">
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="acceptDrops">
         <bool>true</bool>
        </property>

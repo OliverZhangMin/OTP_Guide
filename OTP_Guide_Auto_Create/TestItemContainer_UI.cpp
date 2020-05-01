@@ -26,24 +26,26 @@ TestItemContainer_UI::~TestItemContainer_UI()
 
 }
 
-Json::Value TestItemContainer_UI::GetJsons()
+Json::Value TestItemContainer_UI::GetJsonByAlgoName(const std::string& str_algo)
 {
-	Json::Value all_json;
 	for (int i = 0; i < ui.m_tabWidget->count(); i++)
 	{
-		QTabWidget* p_tab = (QTabWidget*)ui.m_tabWidget->widget(i);
-
 		string algo_name = ui.m_tabWidget->tabText(i).toLocal8Bit().data();
-		BurnRule_UI* p_burn_rule = (BurnRule_UI*)p_tab->widget(1);
-		Json::Value json_tmp;
-		if (!p_burn_rule->GetRuleJson(json_tmp))
+		if (str_algo == algo_name)
 		{
-			string str_log = (boost::format("%s[ERROR]:模块%s获取json数据失败")%__FUNCTION__ %algo_name).str();
-			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
-			return Json::Value();
+			QTabWidget* p_tab = (QTabWidget*)ui.m_tabWidget->widget(i);
+			BurnRule_UI* p_burn_rule = (BurnRule_UI*)p_tab->widget(1);
+			Json::Value json_tmp;
+			if (!p_burn_rule->GetRuleJson(json_tmp))
+			{
+				string str_log = (boost::format("%s[ERROR]:模块%s获取json数据失败") % __FUNCTION__ %algo_name).str();
+				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+				return Json::Value();
+			}
+			return json_tmp;
 		}
-		all_json[algo_name] = json_tmp;
 	}
+	return Json::Value();
 	/*ostringstream os;
 	Json::StreamWriterBuilder swb_cloud_burn;
 	unique_ptr<Json::StreamWriter> writer_cloud(swb_cloud_burn.newStreamWriter());
@@ -51,7 +53,6 @@ Json::Value TestItemContainer_UI::GetJsons()
 	ofstream ofile("out.json", ios::binary | ios::out);
 	ofile << os.str();
 	ofile.close();*/
-	return all_json;
 }
 
 void TestItemContainer_UI::callback_customContextMenuRequested(QPoint pt)

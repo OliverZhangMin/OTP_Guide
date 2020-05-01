@@ -1,0 +1,56 @@
+{
+	"AWB" : 
+	{
+		"BurnData" : 
+		[
+			{
+				"data" : "0.af_code.far_code",
+				"length" : 2,
+				"outconvert" : "HL",
+				"start" : "0x0"
+			}
+		],
+		"CheckSum" : 
+		{
+			"BurnRange" : 
+			[
+				{
+					"end" : "0x1",
+					"start" : "0x0"
+				}
+			],
+			"CheckSumType" : 1,
+			"CheckSum_Addr" : 
+			[
+				"0x2",
+				"0x3"
+			],
+			"ReadRange" : null,
+			"UsedRange" : 
+			[
+				{
+					"end" : "0x1",
+					"start" : "0x0"
+				}
+			]
+		}
+	},
+	"init" : 
+	{
+		"BurnRange" : 
+		[
+			{
+				"end" : "0x3",
+				"start" : "0x0"
+			}
+		],
+		"ProductName" : "123",
+		"ProtectAddr" : "0x39",
+		"ProtectEnable" : "true",
+		"ProtectIICMode" : "3",
+		"ProtectSlaveID" : "0x29",
+		"ProtectVal" : "0x49",
+		"SlaveID" : "0xa0",
+		"version" : "V1.0.0.2"
+	}
+}

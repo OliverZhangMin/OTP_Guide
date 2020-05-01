@@ -47,6 +47,12 @@
          <height>200</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -98,10 +104,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_BurnModellistWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>BurnAddrsAndChecksum</receiver>
+   <slot>callback_BurnItemCustomContextMenuRequested(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1223</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1266</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>callback_BurnAddrWidgetItemChanged(QTableWidgetItem*)</slot>
   <slot>callback_ChecksumConfigcustomContextMenuRequested(QPoint)</slot>
   <slot>callback_ItemClicked(QTableWidgetItem*)</slot>
+  <slot>callback_BurnItemCustomContextMenuRequested(QPoint)</slot>
  </slots>
 </ui>

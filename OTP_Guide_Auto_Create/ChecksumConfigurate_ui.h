@@ -1,19 +1,20 @@
 #pragma once
 
-#include <QWidget>
+#include "MyWidgetBase.h"
 #include "ui_ChecksumConfigurate_ui.h"
 #include <vector>
 #include <string>
 #include <QComboBox>
 struct BurnItem;
 
-class ChecksumConfigurate_ui : public QWidget
+class ChecksumConfigurate_ui : public CMyWidgetBase
 {
 	Q_OBJECT
 
 public:
 	ChecksumConfigurate_ui(BurnItem& item, QWidget *parent = Q_NULLPTR);
 	~ChecksumConfigurate_ui();
+	virtual void UpdataWidget() override;
 	void ShowExcel();
 private:
 	BurnItem& m_Item;

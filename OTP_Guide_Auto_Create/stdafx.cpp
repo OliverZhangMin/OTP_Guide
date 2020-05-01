@@ -138,14 +138,14 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 	Json::Value& js_eeprom_init = root["EEPROM初始化"];
 	if (!js_eeprom_init.isNull())
 	{
-		out.m_eepromInfo.m_str_eeprom_slaveid = js_eeprom_init["eeprom_slaveid"].asString();
-		out.m_eepromInfo.m_str_sensor_slaveid = js_eeprom_init["sensor_slaveid"].asString();
-		out.m_eepromInfo.m_str_DefaultVal     = js_eeprom_init["烧录默认值"].asString();
+		out.m_eepromInfo.m_str_eeprom_slaveid     = js_eeprom_init["eeprom_slaveid"].asString();
+		out.m_eepromInfo.m_str_sensor_slaveid     = js_eeprom_init["sensor_slaveid"].asString();
+		out.m_eepromInfo.m_str_DefaultVal         = js_eeprom_init["烧录默认值"].asString();
 		out.m_eepromInfo.m_str_ProtectIICMode	  = js_eeprom_init["写保护IIC模式"].asString();
-		out.m_eepromInfo.m_str_protect_slaveid = js_eeprom_init["写保护slaveid"].asString();
-		out.m_eepromInfo.m_str_protectAddr = js_eeprom_init["写保护寄存器"].asString();
-		out.m_eepromInfo.m_bProtectEnable = js_eeprom_init["写保护开关"].asBool();
-		out.m_eepromInfo.m_str_protectVal = js_eeprom_init["写保护值"].asString();
+		out.m_eepromInfo.m_str_protect_slaveid    = js_eeprom_init["写保护slaveid"].asString();
+		out.m_eepromInfo.m_str_protectAddr	      = js_eeprom_init["写保护寄存器"].asString();
+		out.m_eepromInfo.m_bProtectEnable		  = js_eeprom_init["写保护开关"].asBool();
+		out.m_eepromInfo.m_str_protectVal	      = js_eeprom_init["写保护值"].asString();
 	}
 
 	Json::Value& js_burn_station_addr = root["烧录站别地址"];
@@ -153,7 +153,7 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 	{
 		auto vec_names = js_burn_station_addr.getMemberNames();
 		for(const auto& name:vec_names)
-			GetExcelPropByJson(js_burn_station_addr[name], out.m_mapBurnAddrs[name]);
+			GetExcelPropByJson(js_burn_station_addr[name], out.m_mapStationInfo[name].m_BurnAddrsExcel);
 	}
 
 	Json::Value& js_BurnStationModule = root["烧录站别的模块"];
@@ -166,9 +166,51 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 		{
 			Json::Value& js_station_name = js_BurnStationModule[name];
 			for (int i = 0; i < js_station_name.size(); i++)
-				out.m_mapVecNeedBurnName[name].push_back(js_station_name[i].asString());
+				out.m_mapStationInfo[name].m_VecNeedBurnName.push_back(js_station_name[i].asString());
 		}
 	}
+
+	Json::Value& js_BurnStationCheckSumModule = root["烧录站别配置的Checksum模块"];
+	if (!js_BurnStationCheckSumModule.isNull())
+	{
+		//先获取站别名
+		auto vec_names = js_BurnStationCheckSumModule.getMemberNames();
+		//在把每个站别下的模块填充到数据结构
+		for (const auto& name : vec_names)
+		{
+			Json::Value& js_station_name = js_BurnStationCheckSumModule[name];
+			for (int i = 0; i < js_station_name.size(); i++)
+				out.m_mapStationInfo[name].m_VecNeedChecksumName.push_back(js_station_name[i].asString());
+		}
+	}
+
+	//Json::Value& js_BurnStationBurnModule = root["已配置烧录站的模块"];
+	//if (!js_BurnStationBurnModule.isNull())
+	//{
+	//	//先获取站别名
+	//	auto vec_names = js_BurnStationBurnModule.getMemberNames();
+	//	//在把每个站别下的模块填充到数据结构
+	//	for (const auto& name : vec_names)
+	//	{
+	//		Json::Value& js_ItemNames = js_BurnStationBurnModule[name];
+	//		for (int i = 0; i < js_ItemNames.size(); i++)
+	//			out.m_vecSpaceUsageBurnModel.push_back(js_ItemNames[i].asString());
+	//	}
+	//}
+
+	//Json::Value& js_SpaceUsageCheckSum = root["已配置CheckSum的模块"];
+	//if (!js_SpaceUsageCheckSum.isNull())
+	//{
+	//	//先获取站别名
+	//	auto vec_names = js_SpaceUsageCheckSum.getMemberNames();
+	//	//在把每个站别下的模块填充到数据结构
+	//	for (const auto& name : vec_names)
+	//	{
+	//		Json::Value& js_ItemNames = js_SpaceUsageCheckSum[name];
+	//		for (int i = 0; i < js_ItemNames.size(); i++)
+	//			out.m_vecSpaceUsageCheckSum.push_back(js_ItemNames[i].asString());
+	//	}
+	//}
 
 	Json::Value& js_projectInfo = root["项目信息"];
 	GetExcelPropByJson(js_projectInfo, out.m_vecProjectInfo);
@@ -192,6 +234,9 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 
 			if (!js_item["CheckSum地址"].isNull())
 				GetExcelPropByJson(js_item["CheckSum地址"] , p_BurnItem->m_CheckSumAddrExcel);
+
+			if (!js_item["CheckSum数据源区间"].isNull())
+				GetExcelPropByJson(js_item["CheckSum数据源区间"], p_BurnItem->m_CheckSumDataSourceRnage);
 
 			if (!js_item["参数配置项"].isNull())
 			{

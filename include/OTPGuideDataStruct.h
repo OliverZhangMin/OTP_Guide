@@ -168,23 +168,32 @@ struct EEPROM_InitInfo
 	string m_str_protectVal = "";
 	string m_str_ProtectIICMode = "";
 	//EFlash部分
+};
 
+struct m_mapStationInfo
+{
+	vector<string> m_VecNeedBurnName;
+	vector<string> m_VecNeedChecksumName;
+	ExcelProp m_BurnAddrsExcel;
 };
 
 struct OTPGuideInfo
 {
 	string m_strProjectName;
 	//vector<pair<string,ExcelProp>> m_VecBurnStationAddr;	//结构体修改
-	map<string, ExcelProp> m_mapBurnAddrs;				//结构体修改,修改后版本,(烧录站别的地址)
-	map<string, vector<string>> m_mapVecNeedBurnName;	//每个烧录站别会烧录的模块,(烧录站别的模块)
+	map<string, m_mapStationInfo> m_mapStationInfo;
+
+	//map<string, ExcelProp> m_mapBurnAddrs;				//结构体修改,修改后版本,(烧录站别的地址)
+	//map<string, vector<string>> m_mapVecNeedBurnName;		//每个烧录站别会烧录的模块,(烧录站别的模块)
+	//map<string, vector<string>> m_mapVecNeedChecksumName;	//每个烧录站别会用到的checksum模块,()
 	ExcelProp m_vecChangeHistroy;						
 	ExcelProp m_vecProjectInfo;							//(项目信息)
 	vector<std::shared_ptr<BurnItem>> m_vecBurnItems;	//(模块配置)
 	vector<string> m_vecAgreeOnInfo;
 	EEPROMAddrExcelProp m_EEPROMAddrExcel;		
 	EEPROM_InitInfo m_eepromInfo;
-	vector<string> m_vecSpaceUsageCheckSum;		//目前被配置使用的checksum名字
-	vector<string> m_vecSpaceUsageBurnModel;		//目前未配置的烧录模块
+	//vector<string> m_vecSpaceUsageCheckSum;			//目前被配置使用的checksum名字
+	//vector<string> m_vecSpaceUsageBurnModel;		//目前未配置的烧录模块
 
 	bool m_bIsChanged = false;
 	int m_iDefaultValue = 0;

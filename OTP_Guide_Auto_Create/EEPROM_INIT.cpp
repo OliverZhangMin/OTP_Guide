@@ -7,6 +7,7 @@ EEPROM_INIT::EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent)
 	: CMyWidgetBase(parent), m_GuideInfo(guide_info)
 {
 	ui.setupUi(this);
+	ui.m_lineEdit_ProjectName->setEnabled(false);
 	//string,ExcelProp
 	//for (auto& excel:guide_info.m_VecBurnStationAddr)
 	//{
@@ -23,6 +24,16 @@ EEPROM_INIT::EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent)
 	QAction* p_InsertBurnStation = new QAction(QString::fromLocal8Bit("新增一个烧录站"), this);
 	m_pBurnStationWidgetMenu->addAction(p_InsertBurnStation);
 	connect(p_InsertBurnStation, &QAction::triggered, this, &EEPROM_INIT::BurnStationInsert);
+
+	QAction* p_DeleteBurnStation = new QAction(QString::fromLocal8Bit("删除当前烧录站"), this);
+	m_pBurnStationWidgetMenu->addAction(p_DeleteBurnStation);
+	connect(p_DeleteBurnStation, &QAction::triggered, this, &EEPROM_INIT::DeleteBurnStation);
+
+	for (const auto& stations : m_GuideInfo.m_mapStationInfo)
+	{
+		BurnAddrsAndChecksum* p_burnaddr = new BurnAddrsAndChecksum(m_GuideInfo,this,stations.first);
+		ui.m_tabWidget_BurnStation->addTab(p_burnaddr, QString::fromLocal8Bit(stations.first.c_str()));
+	}
 
 	//刷新界面
 	callback_ProtectcheckboxClick(m_GuideInfo.m_eepromInfo.m_bProtectEnable);
@@ -51,12 +62,33 @@ void EEPROM_INIT::BurnStationInsert()
 		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 		return;
 	}
+	string str_text = text.toLocal8Bit().data();
+	if (m_GuideInfo.m_mapStationInfo.find(str_text) != m_GuideInfo.m_mapStationInfo.end())
+	{
+		string str_log = (boost::format("%s[ERROR]:已经插入过烧录站%s的模块") % __FUNCTION__ %str_text).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+
 	BurnAddrsAndChecksum* p_burnaddr = new BurnAddrsAndChecksum(m_GuideInfo,this,text.toLocal8Bit().data());
 	ui.m_tabWidget_BurnStation->addTab(p_burnaddr, text);
 
 	/*m_GuideInfo.m_VecBurnStationAddr.push_back(make_pair(text.toLocal8Bit().data(), ExcelProp()));
 	Qt_Excel* p_tmp = new Burn_Station_ui(m_GuideInfo.m_VecBurnStationAddr.rbegin()->second);
 	ui.m_tabWidget_BurnStation->addTab(p_tmp, QString::fromLocal8Bit(m_GuideInfo.m_VecBurnStationAddr.rbegin()->first.c_str()));*/
+}
+
+void EEPROM_INIT::DeleteBurnStation()
+{
+	int cur_burnstation_index = ui.m_tabWidget_BurnStation->currentIndex();
+	if (cur_burnstation_index == -1)
+	{
+		string str_log = (boost::format("%s[ERROR]:没有选择任何烧录站,删除失败") % __FUNCTION__ ).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+	string station_name =  ui.m_tabWidget_BurnStation->tabText(cur_burnstation_index).toLocal8Bit().data();
+
 }
 
 void EEPROM_INIT::callback_BurnStationAddrWidget_customContextMenuRequested(QPoint pt)
@@ -89,12 +121,11 @@ void EEPROM_INIT::UpdataWidget()
 	ui.m_lineEdit_SensorSlaveID->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_sensor_slaveid.c_str()));
 	ui.m_lineEdit_EEPROMSlaveID->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_eeprom_slaveid.c_str()));
 	ui.m_lineEdit_DefaultBurn->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_DefaultVal.c_str()));
-	ui.m_checkBoxProtect->setEnabled(m_GuideInfo.m_eepromInfo.m_bProtectEnable);
+	ui.m_checkBoxProtect->setCheckState(m_GuideInfo.m_eepromInfo.m_bProtectEnable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
 	ui.m_lineEditProtectSlaveID->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_protect_slaveid.c_str()));
 	ui.m_lineEditProtectAddr->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_protectAddr.c_str()));
 	ui.m_lineEditProtectVal->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_protectVal.c_str()));
 	ui.m_lineEditIICMode->setText(QString::fromLocal8Bit(m_GuideInfo.m_eepromInfo.m_str_ProtectIICMode.c_str()));
-
 	connect(ui.m_lineEdit_SensorSlaveID, SIGNAL(textChanged(QString)), this, SLOT(callback_ProtectTextChanged(QString)));
 	connect(ui.m_lineEdit_EEPROMSlaveID, SIGNAL(textChanged(QString)), this, SLOT(callback_ProtectTextChanged(QString)));
 	connect(ui.m_lineEdit_DefaultBurn, SIGNAL(textChanged(QString)), this, SLOT(callback_ProtectTextChanged(QString)));
@@ -103,42 +134,91 @@ void EEPROM_INIT::UpdataWidget()
 	connect(ui.m_lineEditProtectVal, SIGNAL(textChanged(QString)), this, SLOT(callback_ProtectTextChanged(QString)));
 	connect(ui.m_lineEditIICMode, SIGNAL(textChanged(QString)), this, SLOT(callback_ProtectTextChanged(QString)));
 
-	vector<BurnItem> vec_burnItem;
-	for (auto it : m_GuideInfo.m_vecBurnItems)
+	//显示烧录站别的烧录地址
+	for (int i = 0; i < ui.m_tabWidget_BurnStation->count(); i++)
+		((CMyWidgetBase*)ui.m_tabWidget_BurnStation->widget(i))->UpdataWidget();
+	
+	//ui.m_tabWidget_BurnStation->clear();
+	//for (const auto& stations_name : m_GuideInfo.m_mapBurnAddrs)
+	//{
+	//	BurnAddrsAndChecksum* p_burnAddr = new BurnAddrsAndChecksum(m_GuideInfo, this, stations_name.first);
+	//	ui.m_tabWidget_BurnStation->addTab(p_burnAddr, QString::fromLocal8Bit(stations_name.first.c_str()));
+	//}
+
+	vector<string> vecChecksumList;
+	vector<string> vecBurnList;
+	for (const auto items : m_GuideInfo.m_vecBurnItems)
 	{
-		string algo_name = it->title;
-		if (!it->m_CheckSumRangeExcel.m_vecData.empty())		//如果是存在checksum 地址区间的,则需要配置checksum的数据来源
+		vecChecksumList.push_back(items->title);
+		vecBurnList.push_back(items->title);
+	}
+
+	for (const auto& stations : m_GuideInfo.m_mapStationInfo)
+	{
+		for (const auto& name : stations.second.m_VecNeedBurnName)
 		{
-			//如果没有在被占用的checksum模块名单中,则显示
-			if (std::find_if(m_GuideInfo.m_vecSpaceUsageCheckSum.begin(), m_GuideInfo.m_vecSpaceUsageCheckSum.end(), [algo_name](string& str)
+			auto iter = std::find_if(vecBurnList.begin(), vecBurnList.end(), [name](string str)
 			{
-				return str == algo_name;
-			}) == m_GuideInfo.m_vecSpaceUsageCheckSum.end())
-			{
-				ui.m_UsedChecksumlistWidget->addItem(QString::fromLocal8Bit(algo_name.c_str()));
-			}
+				return str == name;
+			});
+			if (iter != vecBurnList.end())
+				vecBurnList.erase(iter);
 		}
 
-		//遍历map中所有的烧录模块,都不存在时,才能在为配置烧录模块中显示
-		bool b_isExist = false;		//如果不存在任何烧录站的缓存中,则可以在列表中显示,供用户双击配置
-		for (const auto& it : m_GuideInfo.m_mapVecNeedBurnName)
+		for (const auto& name : stations.second.m_VecNeedChecksumName)
 		{
-			string station_name = it.first;		//当前的烧录站别名
-
-			if (std::find_if(it.second.begin(), it.second.end(), [algo_name](const string& str) 
+			auto iter = std::find_if(vecChecksumList.begin(), vecChecksumList.end(), [name](string str)
 			{
-				return str == algo_name;
-			}
-			) != it.second.end())
-			{
-				b_isExist = true;
-			}
-		}
-		if (b_isExist == false)
-		{
-			ui.m_UsedConfigBurnModelWidget->addItem(QString::fromLocal8Bit(algo_name.c_str()));
+				return str == name;
+			});
+			if(iter != vecChecksumList.end())
+				vecChecksumList.erase(iter);
 		}
 	}
+
+	for (const auto& name : vecChecksumList)
+		ui.m_UsedChecksumlistWidget->addItem(QString::fromLocal8Bit(name.c_str()));
+
+	for (const auto& name : vecBurnList)
+		ui.m_UsedConfigBurnModelWidget->addItem(QString::fromLocal8Bit(name.c_str()));
+
+	////显示需要配置的模块
+	//vector<BurnItem> vec_burnItem;
+	//for (auto it : m_GuideInfo.m_vecBurnItems)
+	//{
+	//	string algo_name = it->title;
+	//	if (!it->m_CheckSumRangeExcel.m_vecData.empty())		//如果是存在checksum 地址区间的,则需要配置checksum的数据来源
+	//	{
+	//		//如果没有在被占用的checksum模块名单中,则显示
+	//		if (std::find_if(m_GuideInfo.m_vecSpaceUsageCheckSum.begin(), m_GuideInfo.m_vecSpaceUsageCheckSum.end(), [algo_name](string& str)
+	//		{
+	//			return str == algo_name;
+	//		}) == m_GuideInfo.m_vecSpaceUsageCheckSum.end())
+	//		{
+	//			ui.m_UsedChecksumlistWidget->addItem(QString::fromLocal8Bit(algo_name.c_str()));
+	//		}
+	//	}
+
+	//	//遍历map中所有的烧录模块,都不存在时,才能在为配置烧录模块中显示
+	//	bool b_isExist = false;		//如果不存在任何烧录站的缓存中,则可以在列表中显示,供用户双击配置
+	//	for (const auto& it : m_GuideInfo.m_mapStationInfo) //m_mapVecNeedBurnName
+	//	{
+	//		string station_name = it.first;		//当前的烧录站别名
+
+	//		if (std::find_if(it.second.m_VecNeedBurnName.begin(), it.second.m_VecNeedBurnName.end(), [algo_name](const string& str)
+	//		{
+	//			return str == algo_name;
+	//		}
+	//		) != it.second.m_VecNeedBurnName.end())
+	//		{
+	//			b_isExist = true;
+	//		}
+	//	}
+	//	if (b_isExist == false)
+	//	{
+	//		ui.m_UsedConfigBurnModelWidget->addItem(QString::fromLocal8Bit(algo_name.c_str()));
+	//	}
+	//}
 	callback_ProtectTextChanged("");	//界面上有关16进制的配置
 }
 
@@ -152,7 +232,10 @@ void EEPROM_INIT::callback_doubleClicked(QModelIndex index)
 		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
 		return;
 	}
-	m_GuideInfo.m_vecSpaceUsageCheckSum.push_back(str_cur_text);
+	string str_station_name = ui.m_tabWidget_BurnStation->tabText(burn_station_index).toLocal8Bit().data();	//烧录站别的名字
+	m_GuideInfo.m_mapStationInfo[str_station_name].m_VecNeedChecksumName.push_back(str_cur_text);
+	//m_GuideInfo.m_vecSpaceUsageCheckSum.push_back(str_cur_text);
+
 	BurnAddrsAndChecksum* p_cur_burn_check = (BurnAddrsAndChecksum*)ui.m_tabWidget_BurnStation->widget(burn_station_index);
 	//找到这个算法名,对应的BurnItem类
 	auto iter = std::find_if(m_GuideInfo.m_vecBurnItems.begin(), m_GuideInfo.m_vecBurnItems.end(), [str_cur_text](std::shared_ptr<BurnItem> item)
@@ -174,7 +257,7 @@ void EEPROM_INIT::callback_ConfigBurnModelDoubleClicked(QModelIndex index)
 		return;
 	}
 	string str_station_name = ui.m_tabWidget_BurnStation->tabText(burn_station_index).toLocal8Bit().data();	//烧录站别的名字
-	m_GuideInfo.m_mapVecNeedBurnName[str_station_name].push_back(str_cur_text);
+	m_GuideInfo.m_mapStationInfo[str_station_name].m_VecNeedBurnName.push_back(str_cur_text);
 	BurnAddrsAndChecksum* p_cur_burn_check = (BurnAddrsAndChecksum*)ui.m_tabWidget_BurnStation->widget(burn_station_index);
 	p_cur_burn_check->ui.m_BurnModellistWidget->addItem(QString::fromLocal8Bit(str_cur_text.c_str()));
 	UpdataWidget();	//更新列表

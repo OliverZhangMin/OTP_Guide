@@ -2,7 +2,7 @@
 #include "ChecksumConfigurate_ui.h"
 
 ChecksumConfigurate_ui::ChecksumConfigurate_ui(BurnItem& item, QWidget *parent)
-	: QWidget(parent),/* m_vecCheckSumRange(item.m_vecCheckSumRange),*/ m_Item(item)
+	: CMyWidgetBase(parent),/* m_vecCheckSumRange(item.m_vecCheckSumRange),*/ m_Item(item)
 {
 	ui.setupUi(this);
 	ui.m_tableWidgetChecksumDataSource->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -20,6 +20,11 @@ ChecksumConfigurate_ui::ChecksumConfigurate_ui(BurnItem& item, QWidget *parent)
 ChecksumConfigurate_ui::~ChecksumConfigurate_ui()
 {
 
+}
+
+void ChecksumConfigurate_ui::UpdataWidget()
+{
+	ShowExcel();
 }
 
 void ChecksumConfigurate_ui::callback_customContextMenuRequested(QPoint pt)

@@ -26,4 +26,5 @@ private slots:
 	void callback_currentChanged(int);
 	void callback_GenerateOTPGuide();
 	void SaveConfig();
+	void SaveBurnJsonFile();
 };

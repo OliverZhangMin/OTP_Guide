@@ -1,0 +1,56 @@
+{
+	"LSC" : 
+	{
+		"BurnData" : 
+		[
+			{
+				"data" : "0.cct_u_v_ev.ev",
+				"length" : 2,
+				"outconvert" : "HL",
+				"start" : "0x4"
+			}
+		],
+		"CheckSum" : 
+		{
+			"BurnRange" : 
+			[
+				{
+					"end" : "0x5",
+					"start" : "0x4"
+				}
+			],
+			"CheckSumType" : 2,
+			"CheckSum_Addr" : 
+			[
+				"0x6",
+				"0x7"
+			],
+			"ReadRange" : null,
+			"UsedRange" : 
+			[
+				{
+					"end" : "0x5",
+					"start" : "0x4"
+				}
+			]
+		}
+	},
+	"init" : 
+	{
+		"BurnRange" : 
+		[
+			{
+				"end" : "0x7",
+				"start" : "0x4"
+			}
+		],
+		"ProductName" : "123",
+		"ProtectAddr" : "0x39",
+		"ProtectEnable" : "true",
+		"ProtectIICMode" : "3",
+		"ProtectSlaveID" : "0x29",
+		"ProtectVal" : "0x49",
+		"SlaveID" : "0xa0",
+		"version" : "V1.0.0.2"
+	}
+}
