@@ -17,6 +17,7 @@
 #include <fstream>
 #include <Windows.h>
 #include <json.h>
+#include <QTextEdit>
 //ss
 //判断是否是16进制的字符串
 bool IsHex(const string& str);
@@ -32,3 +33,18 @@ bool GetJsonByExcelProp(Json::Value&,const ExcelProp&);
 bool GetExcelPropByJson(const Json::Value&, ExcelProp&);
 
 bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out);
+
+
+class CMyTextEdit :public QTextEdit
+{
+	Q_OBJECT
+public:
+	CMyTextEdit(CMyWidgetBase* p_base,string& str_source, const string& init_str);
+protected:
+	virtual void focusOutEvent(QFocusEvent *event) override;
+private:
+	CMyWidgetBase* m_pBase = nullptr;
+	string& m_strText;
+	private slots:
+	void callback_MyTextEditTextChanged();
+};

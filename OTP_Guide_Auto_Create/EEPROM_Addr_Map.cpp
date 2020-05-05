@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "EEPROM_Addr_Map.h"
-
 EEPROM_Addr_Map::EEPROM_Addr_Map(OTPGuideInfo& guide_info,QWidget *parent)
 	: CMyWidgetBase(parent),m_GuideInfo(guide_info),m_mapSpan(guide_info.m_EEPROMAddrExcel.m_mapColnCombInfo)
 {
@@ -12,14 +11,16 @@ EEPROM_Addr_Map::~EEPROM_Addr_Map()
 {
 		
 }
+
 void EEPROM_Addr_Map::ShowExcel()
 {
-	disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_AddrsItemChanged(QTableWidgetItem*)));
+	//disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_AddrsItemChanged(QTableWidgetItem*)));
+	disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.tableWidget, SLOT(resizeRowsToContents()));
 	auto& addr_map = m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp;
-	ui.tableWidget->clearSpans();		//清空所有的合并
+	ui.tableWidget->clearSpans();												//清空所有的合并
 	ui.tableWidget->clearContents();
-	ui.tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);//表头字体居中
-	int row_count = addr_map.size();// +m_GuideInfo.m_EEPROMAddrExcel.m_vecSectionAddrInfo.size();	//计算这个表格有多少行要显示
+	ui.tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter);  //表头字体居中
+	int row_count = addr_map.size();											// +m_GuideInfo.m_EEPROMAddrExcel.m_vecSectionAddrInfo.size();	//计算这个表格有多少行要显示
 	ui.tableWidget->setRowCount(row_count);
 	int column_count = addr_map.begin()->second.size() + 1;
 	ui.tableWidget->setColumnCount(column_count);
@@ -28,6 +29,7 @@ void EEPROM_Addr_Map::ShowExcel()
 	//for (const auto& label : m_vecBurnRuleHeaderLabels)
 	//	list_headerLabels.push_back(QString::fromLocal8Bit(label.c_str()));
 	//ui.m_BurnRuleTable->setHorizontalHeaderLabels(list_headerLabels);
+
 	//先插入所有的数据
 	int cur_row = 0;
 	char buff[64];
@@ -63,6 +65,10 @@ void EEPROM_Addr_Map::ShowExcel()
 	for (const auto& checksum_addr : vec_checksum)
 	{
 		int find_row = FindRowByAddr(checksum_addr);
+		if (find_row == -1)
+		{
+			continue;;
+		}
 		for (int i = 0; i < column_count; i++)
 			ui.tableWidget->item(find_row, i)->setBackground(Qt::yellow);
 	}
@@ -109,7 +115,9 @@ void EEPROM_Addr_Map::ShowExcel()
 			ui.tableWidget->setSpan(row_start, col, span_size, 1);
 		}
 	}
-	connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_AddrsItemChanged(QTableWidgetItem*)));
+	connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.tableWidget, SLOT(resizeRowsToContents()));
+	ui.tableWidget->resizeRowsToContents();
+	//connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_AddrsItemChanged(QTableWidgetItem*)));
 }
 
 void EEPROM_Addr_Map::UpdataWidget()
@@ -118,7 +126,7 @@ void EEPROM_Addr_Map::UpdataWidget()
 	char buff[64];
 	//获取所有BurnItem,并保存到map
 	auto& addr_map = m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp;
-	addr_map.clear();
+	map<int, vector<string>> tmp_addr_map;
 	m_GuideInfo.m_EEPROMAddrExcel.m_vecSectionAddrInfo.clear();	//清空这个区域的地址段数据
 	m_GuideInfo.m_EEPROMAddrExcel.m_vecCheckSumAddrs.clear();	//删除先前checksum的地址
 
@@ -135,33 +143,42 @@ void EEPROM_Addr_Map::UpdataWidget()
 			int len = boost::lexical_cast<int>(burn[1]);
 			if(std::find(vec_addrs.begin(),vec_addrs.end(), addr + len - 1) == vec_addrs.end())	//如果没有找到过该地址就新增
 				vec_addrs.push_back(addr + len - 1);
-
+			vector<string> vec_str;
+			int loop_count = boost::lexical_cast<int>(burn[1]);
 			if (addr_map[addr].empty())
 			{
-				vector<string> vec_str;
+				//如果之前这个地址就没有数据的话，那就要填充新的数据了
+				
 				/*boost::assign::push_back(vec_str)(burn[0])("")("")("")(burn[1])(burn[2])(burn[3]);*/
 				boost::assign::push_back(vec_str)("")("")("")(burn[1])(burn[2])(burn[3]);
-				addr_map[addr] = vec_str;			//插入一行测试数据
-				int loop_count = boost::lexical_cast<int>(burn[1]);
-				for (int i = 1; i < loop_count; i++)
-				{
-					int tmp_addr = ++addr;
-					vec_str.clear();
-					/*sprintf(buff, "0x%x", tmp_addr);
-					boost::assign::push_back(vec_str)(buff)("")("")("")("")("")("");*/
-					boost::assign::push_back(vec_str)("")("")("")("")("")(""); 
-					addr_map[addr] = vec_str;
-				}
+				tmp_addr_map[addr] = vec_str;			//插入一行测试数据
 			}
 			else
-			{/*
-				addr_map[addr][4] = burn[1];
-				addr_map[addr][5] = burn[2];
-				addr_map[addr][6] = burn[3];*/
-
+			{
 				addr_map[addr][3] = burn[1];
 				addr_map[addr][4] = burn[2];
 				addr_map[addr][5] = burn[3];
+				tmp_addr_map[addr] = addr_map[addr];
+			}
+			for (int i = 1; i < loop_count; i++)
+			{
+				++addr;
+				vec_str.clear();
+				/*sprintf(buff, "0x%x", tmp_addr);
+				boost::assign::push_back(vec_str)(buff)("")("")("")("")("")("");*/
+				if (!addr_map[addr].empty())
+				{
+					//如果之前这个地址有填过信息，那么只把它的烧录规则改掉
+					addr_map[addr][3] = "";
+					addr_map[addr][4] = "";
+					addr_map[addr][5] = "";
+					tmp_addr_map[addr] = addr_map[addr];
+				}
+				else
+				{
+					boost::assign::push_back(vec_str)("")("")("")("")("")("");
+					tmp_addr_map[addr] = vec_str;
+				}
 			}
 		}
 
@@ -183,7 +200,7 @@ void EEPROM_Addr_Map::UpdataWidget()
 				vector<string> vec_str;
 				/*boost::assign::push_back(vec_str)(item->m_vecCheckSumAddr[0][0])("")("")("")("")("")(item->m_vecCheckSumAddr[0][3]);*/
 				boost::assign::push_back(vec_str)("")("")("")("")("")(item->m_CheckSumAddrExcel.m_vecData[0][3]);
-				addr_map[addr] = vec_str;			//插入一行测试数据
+				tmp_addr_map[addr] = vec_str;			//插入一行测试数据
 				int loop_count = boost::lexical_cast<int>(item->m_CheckSumAddrExcel.m_vecData[0][1]);
 				for (int i = 1; i < loop_count; i++)
 				{
@@ -192,8 +209,12 @@ void EEPROM_Addr_Map::UpdataWidget()
 					/*sprintf(buff, "0x%x", tmp_addr);
 					boost::assign::push_back(vec_str)(buff)("")("")("")("")("")("");*/
 					boost::assign::push_back(vec_str)("")("")("")("")("")("");
-					addr_map[addr] = vec_str;
+					tmp_addr_map[addr] = vec_str;
 				}
+			}
+			else
+			{
+				tmp_addr_map[addr] = addr_map[addr];
 			}
 		}
 
@@ -207,6 +228,7 @@ void EEPROM_Addr_Map::UpdataWidget()
 			m_GuideInfo.m_EEPROMAddrExcel.m_vecSectionAddrInfo.push_back(map_section);	//追加这个区域的地址段数据
 		}
 	}
+	addr_map = tmp_addr_map;
 	if(addr_map.size())
 		ShowExcel();
 }
@@ -392,14 +414,54 @@ int EEPROM_Addr_Map::FindRowByAddr(const int& addr)
 	return -1;
 }
 
-void EEPROM_Addr_Map::callback_AddrsItemChanged(QTableWidgetItem* item)
+//void EEPROM_Addr_Map::callback_AddrsItemChanged(QTableWidgetItem* item)
+//{
+//	//auto& addrs_map = m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp;
+//	int row = item->row();
+//	int col = item->column();
+//	string str_data = item->text().toLocal8Bit().data();
+//	string str_addr = ui.tableWidget->item(row, 0)->text().toLocal8Bit().data();
+//	int addr = -1;
+//	sscanf(str_addr.c_str(), "0x%x", &addr);
+//	m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp[addr][col - 1] = str_data;
+//}
+
+void EEPROM_Addr_Map::callback_ItemDoubleClicked(QTableWidgetItem* item)
 {
-	//auto& addrs_map = m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp;
 	int row = item->row();
 	int col = item->column();
-	string str_data = item->text().toLocal8Bit().data();
+	if (col < 1 || col > 3)
+		return;
 	string str_addr = ui.tableWidget->item(row, 0)->text().toLocal8Bit().data();
+	if (!IsHex(str_addr))
+	{
+		string str_log = (boost::format("%s[ERROR]:当前选中的第%d行，地址不是有效的16进制，无法进行数据填充") %__FUNCTION__ % row).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+
+	char buff[32];
 	int addr = -1;
 	sscanf(str_addr.c_str(), "0x%x", &addr);
-	m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp[addr][col - 1] = str_data;
+
+	string str_current_text = item->text().toLocal8Bit().data();
+	CMyTextEdit* p_text = new CMyTextEdit(this,m_GuideInfo.m_EEPROMAddrExcel.m_mapAddrProp[addr][col-1], str_current_text); //.m_vecData[m_iLastRow][m_iLastCol], this, BurnRule);
+	ui.tableWidget->setCellWidget(row, col, p_text);
+}
+
+void EEPROM_Addr_Map::callback_CurrentItemChanged(QTableWidgetItem* cur, QTableWidgetItem* pre)
+{
+	//if (pre)
+	//{
+	//	int pre_col = pre->column();
+	//	int pre_row = pre->row();
+	//	if (pre_col >= 1 && pre_col <= 3)
+	//	{
+	//		if (ui.tableWidget->cellWidget(pre_row, pre_col))
+	//		{
+	//			ui.tableWidget->removeCellWidget(pre_row, pre_col);
+	//			ShowExcel();
+	//		}
+	//	}
+	//}
 }

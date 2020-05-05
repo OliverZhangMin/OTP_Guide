@@ -34,10 +34,10 @@ OTP_Guide_Auto_Create::OTP_Guide_Auto_Create(QWidget *parent)
 	if(1)
 		GetOTPGuideConfigByJsonFile(m_GuideInfo);
 
-	m_mapWidgets["EEPROM映射表"].reset(new EEPROM_Addr_Map(m_GuideInfo));
-	m_mapWidgets["烧录初始配置"].reset(new EEPROM_INIT(m_GuideInfo));
 	m_mapWidgets["项目信息"].reset(new ProjectInformation_UI(m_GuideInfo));
 	m_mapWidgets["烧录测试项信息"].reset(new TestItemContainer_UI(m_GuideInfo));
+	m_mapWidgets["烧录初始配置"].reset(new EEPROM_INIT(m_GuideInfo));
+	m_mapWidgets["EEPROM映射表"].reset(new EEPROM_Addr_Map(m_GuideInfo));
 	m_mapWidgets["修改历史"].reset(new ChangeLog_UI(m_GuideInfo));
 	for (auto& wid : m_mapWidgets)
 		ui.m_tabWidget->addTab(wid.second.get(), QString::fromLocal8Bit(wid.first.c_str()));
@@ -87,10 +87,10 @@ void OTP_Guide_Auto_Create::SaveConfig()
 		//*--------------烧录站别的地址--<*/
 
 		/*--------------烧录站别要烧录的模块*/
-		
+
 		Json::Value js_modules;
 		for (const auto& burn_name : stations.second.m_VecNeedBurnName)
-			js_modules.append(burn_name);	
+			js_modules.append(burn_name);
 		js_BurnStationModule[stations.first] = js_modules;
 		/*--------------烧录站别要烧录的模块--<*/
 
@@ -103,28 +103,9 @@ void OTP_Guide_Auto_Create::SaveConfig()
 	}
 	all_save_json["烧录站别的模块"] = js_BurnStationModule;
 	all_save_json["烧录站别配置的Checksum模块"] = js_BurnStationCheckSumModule;
-	///*--------------烧录站别的地址*/
-	//Json::Value js_BurnStationAddr;
-	//for (const auto& stations : m_GuideInfo.m_mapBurnAddrs)
-	//	GetJsonByExcelProp(js_BurnStationAddr[stations.first], stations.second);
-	//all_save_json["烧录站别地址"] = js_BurnStationAddr;
-	///*--------------烧录站别的地址--<*/
-
-	///*--------------烧录站别要烧录的模块*/
-	//Json::Value js_BurnStationModule;
-	//for (const auto& stations : m_GuideInfo.m_mapVecNeedBurnName)
-	//{
-	//	Json::Value js_modules;
-	//	for (const auto& name : stations.second)
-	//		js_modules.append(name);
-
-	//	js_BurnStationModule[stations.first] = js_modules;
-	//}
-	//all_save_json["烧录站别的模块"] = js_BurnStationModule;
-	///*--------------烧录站别要烧录的模块--<*/
 
 	/*--------------EEPROM的初始信息*/
-	Json::Value js_eeprom_init;
+	/*Json::Value js_eeprom_init;
 	js_eeprom_init["eeprom_slaveid"] = m_GuideInfo.m_eepromInfo.m_str_eeprom_slaveid;
 	js_eeprom_init["sensor_slaveid"] = m_GuideInfo.m_eepromInfo.m_str_sensor_slaveid;
 	js_eeprom_init["烧录默认值"] = m_GuideInfo.m_eepromInfo.m_str_DefaultVal;
@@ -133,7 +114,9 @@ void OTP_Guide_Auto_Create::SaveConfig()
 	js_eeprom_init["写保护寄存器"] = m_GuideInfo.m_eepromInfo.m_str_protectAddr;
 	js_eeprom_init["写保护值"] = m_GuideInfo.m_eepromInfo.m_str_protectVal;
 	js_eeprom_init["写保护IIC模式"] = m_GuideInfo.m_eepromInfo.m_str_ProtectIICMode;
-	all_save_json["EEPROM初始化"] = js_eeprom_init;
+	all_save_json["EEPROM初始化"] = js_eeprom_init;*/
+	all_save_json["EEPROM初始化"] = m_GuideInfo.m_eepromInfo.ToJsonConfig();
+
 	/*--------------EEPROM的初始信息--<*/
 
 	/*--------------模块烧录规则,参数配置*/
@@ -169,7 +152,7 @@ void OTP_Guide_Auto_Create::SaveConfig()
 		}
 
 		//算法模块名用到的图片或字符串
-		if(items->contentBeforeSubContent.size() == 1)
+		if (items->contentBeforeSubContent.size() == 1)
 			if (items->contentBeforeSubContent[0].type == 0)
 			{
 				string str;
@@ -188,10 +171,13 @@ void OTP_Guide_Auto_Create::SaveConfig()
 
 	/*--------------修改历史*/
 	Json::Value js_changeHistory;
-	GetJsonByExcelProp(js_changeHistory,m_GuideInfo.m_vecChangeHistroy);
+	GetJsonByExcelProp(js_changeHistory, m_GuideInfo.m_vecChangeHistroy);
 	all_save_json["修改历史"] = js_changeHistory;
 	/*--------------修改历史--<*/
 
+	/*--------------将用户配置的地址的描述信息保存*/
+	all_save_json["EEPROM映射表信息"] = m_GuideInfo.m_EEPROMAddrExcel.ToJsonConfig();
+	/*将用户配置的地址的描述信息保存--<*/
 	ostringstream os;
 	Json::StreamWriterBuilder swb_cloud_burn;
 	unique_ptr<Json::StreamWriter> writer_cloud(swb_cloud_burn.newStreamWriter());

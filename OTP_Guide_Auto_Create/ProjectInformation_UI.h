@@ -17,7 +17,8 @@ private:
 	std::vector<std::string> m_vecImportantNames;
 	std::vector<std::string> m_vecHeaderLabels;
 protected slots:
-	virtual void callback_itemClicked(QTableWidgetItem*) override;
-	virtual void callback_textChanged();
+	virtual void callback_itemDoubleClicked(QTableWidgetItem*);
+	//virtual void callback_itemClicked(QTableWidgetItem*) override;
+	//virtual void callback_textChanged();
 };
 

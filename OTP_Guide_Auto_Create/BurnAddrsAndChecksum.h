@@ -5,9 +5,11 @@
 #include "EEPROM_INIT.h"
 #include<vector>
 #include<string>
+
 struct OTPGuideInfo;
 struct BurnItem;
 class EEPROM_INIT;
+
 
 class BurnAddrsAndChecksum : public CMyWidgetBase
 {
@@ -17,10 +19,10 @@ public:
 	~BurnAddrsAndChecksum();
 	void AddCheckSumConfigInfo(BurnItem&);
 	virtual void UpdataWidget() override;  //更新UI界面
-	void ShowExcel();
+	//void ShowExcel();
 	Ui::BurnAddrsAndChecksum ui;
 protected:
-	virtual void keyPressEvent(QKeyEvent * k);
+	//virtual void keyPressEvent(QKeyEvent * k);
 private:
 	string m_strStationName = "";
 	ExcelProp& m_BurnExcel;
@@ -32,9 +34,9 @@ private:
 	EEPROM_INIT* m_pInitWidget = nullptr;
 	int m_iLastSelectRow = -1;
 	int m_iLastSelectCol = -1;
-	bool InsertOneRow();
+	//bool InsertOneRow();
 private slots:
-	void callback_BurnAddrWidgetItemChanged(QTableWidgetItem*);
+	//void callback_BurnAddrWidgetItemChanged(QTableWidgetItem*);
 	void callback_DeleteCurrentCheckSumConfig();				//删除当前选中的chekcsum配置界面
 	void callback_ChecksumConfigcustomContextMenuRequested(QPoint);
 

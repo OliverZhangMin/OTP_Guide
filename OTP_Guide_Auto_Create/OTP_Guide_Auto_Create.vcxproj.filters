@@ -67,6 +67,12 @@
     <ClCompile Include="ChangeLog_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\include\OTPGuideDataStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HexCheckExcel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="OTP_Guide_Auto_Create.h">
@@ -105,6 +111,12 @@
     <QtMoc Include="ChangeLog_UI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="HexCheckExcel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="OTP_Guide_Auto_Create.ui">
@@ -141,9 +153,6 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\OTPGuideDataStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>

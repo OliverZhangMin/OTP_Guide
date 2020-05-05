@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "json.h"
 
 #include <boost/archive/binary_oarchive.hpp> 
 #include <boost/archive/binary_iarchive.hpp> 
@@ -19,29 +20,12 @@
 
 using namespace std;
 
-// struct CAddr_prop
-// {
-// 	string m_strData = "";
-// 	string m_strContent = "";
-// 	string m_strDescription = "";
-// 
-// 	friend class boost::serialization::access;
-// 	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
-// 		ar & m_strData;
-// 		ar & m_strContent;
-// 		ar & m_strDescription;
-// 	}
-// };
-
-// struct MapInfo
-// {
-// 	map<int, CAddr_prop> m_mapAddrProp;
-// 
-// 	friend class boost::serialization::access;
-// 	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
-// 		ar & m_mapAddrProp;
-// 	}
-// };
+class ToJsonConfigBase
+{
+public:
+	virtual Json::Value ToJsonConfig() = 0;
+	virtual void GetInfoByJson(const Json::Value& js) = 0;
+};
 
 struct ExcelProp
 {
@@ -131,8 +115,11 @@ struct  MapSectionAddr
 	}
 };
 
-struct EEPROMAddrExcelProp
+class EEPROMAddrExcelProp :public ToJsonConfigBase
 {
+public:
+	virtual Json::Value ToJsonConfig() override;
+	virtual void GetInfoByJson(const Json::Value& js) override;
 	/*////////address
 	content- 0
 	data   - 1
@@ -141,23 +128,15 @@ struct EEPROMAddrExcelProp
 	拆分类型 -4
 	烧录长度 -5*/
 	map<int, vector<string>> m_mapAddrProp;
-	//MapInfo m_mapInfo;
-	vector<int> m_vecCheckSumAddrs;
-	vector<MapSectionAddr> m_vecSectionAddrInfo;
 	std::map<int, vector<pair<int, int>>> m_mapColnCombInfo;
 
-
-	friend class boost::serialization::access;
-	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
-		ar & m_mapAddrProp;
-		ar & m_mapColnCombInfo;
-		ar & m_vecSectionAddrInfo;
-		ar & m_vecCheckSumAddrs;
-	}
+	vector<int> m_vecCheckSumAddrs;
+	vector<MapSectionAddr> m_vecSectionAddrInfo;
 };
 
-struct EEPROM_InitInfo
+class EEPROM_InitInfo:public ToJsonConfigBase
 {
+public:
 	string m_str_eeprom_slaveid = "";
 	string m_str_sensor_slaveid = "";
 	string m_str_DefaultVal = "";
@@ -168,6 +147,9 @@ struct EEPROM_InitInfo
 	string m_str_protectVal = "";
 	string m_str_ProtectIICMode = "";
 	//EFlash部分
+	ExcelProp m_EFlashExcel;
+	virtual Json::Value ToJsonConfig() override;
+	virtual void GetInfoByJson(const Json::Value& js) override;
 };
 
 struct m_mapStationInfo

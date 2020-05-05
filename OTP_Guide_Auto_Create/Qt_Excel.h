@@ -19,7 +19,7 @@ protected:
 	ExcelProp& m_outExcel;
 	QList<QTableWidgetItem*> m_SelectItems;
 	virtual void keyPressEvent(QKeyEvent * k);
-	virtual void ShowExcel();
+	virtual void ShowExcel() override;
 	virtual bool InsertOneRow();
 	int m_iLastSelectRow = -1;
 	int m_iLastSelectCol = -1;
@@ -27,9 +27,9 @@ protected:
 	std::vector<std::string> m_vecHeaderLabels;
 	//void HideTextDesc();
 protected slots :
-	virtual void callback_itemClicked(QTableWidgetItem*);
-	virtual void callback_textChanged();
-	virtual void callback_itemDoubleClicked(QTableWidgetItem*) {}
+	virtual void callback_itemDoubleClicked(QTableWidgetItem*);
+	//virtual void callback_itemClicked(QTableWidgetItem*);
+	//virtual void callback_textChanged();
 	//virtual void callback_itemSelectionChanged();
 	//virtual void callback_cellClicked(int row, int col);
 };

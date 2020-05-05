@@ -2,6 +2,7 @@
 #include "EEPROM_INIT.h"
 #include "Burn_Station_ui.h"
 #include "BurnAddrsAndChecksum.h"
+#include "HexCheckExcel.h"
 
 EEPROM_INIT::EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent)
 	: CMyWidgetBase(parent), m_GuideInfo(guide_info)
@@ -20,6 +21,14 @@ EEPROM_INIT::EEPROM_INIT(OTPGuideInfo& guide_info,QWidget *parent)
 		Qt_Excel* p_tmp = new Burn_Station_ui(excel.second);
 		ui.m_tabWidget_BurnStation->addTab(p_tmp, QString::fromLocal8Bit(excel.first.c_str()));
 	}*/
+
+	if (m_GuideInfo.m_eepromInfo.m_EFlashExcel.m_vecHeaderLabels.empty())
+	{
+		m_GuideInfo.m_eepromInfo.m_EFlashExcel.m_vecHeaderLabels.push_back("寄存器");
+		m_GuideInfo.m_eepromInfo.m_EFlashExcel.m_vecHeaderLabels.push_back("数值");
+	}
+	ui.m_ElashScrollArea->setWidget(new CHexCheckExcel(m_GuideInfo.m_eepromInfo.m_EFlashExcel));
+
 	m_pBurnStationWidgetMenu = new QMenu(ui.m_tabWidget_BurnStation);
 	QAction* p_InsertBurnStation = new QAction(QString::fromLocal8Bit("新增一个烧录站"), this);
 	m_pBurnStationWidgetMenu->addAction(p_InsertBurnStation);
@@ -88,7 +97,6 @@ void EEPROM_INIT::DeleteBurnStation()
 		return;
 	}
 	string station_name =  ui.m_tabWidget_BurnStation->tabText(cur_burnstation_index).toLocal8Bit().data();
-
 }
 
 void EEPROM_INIT::callback_BurnStationAddrWidget_customContextMenuRequested(QPoint pt)

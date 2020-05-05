@@ -3,6 +3,8 @@
 #include <QKeyEvent>
 #include <boost/format.hpp>
 
+
+
 Qt_Excel::Qt_Excel(ExcelProp& out_excel,QWidget *parent)
 	:m_outExcel(out_excel), CMyWidgetBase(parent)
 {
@@ -14,7 +16,6 @@ Qt_Excel::Qt_Excel(ExcelProp& out_excel,QWidget *parent)
 	ui.m_tableWidget->setHorizontalHeaderLabels(headerLabels);
 	ui.m_tableWidget->horizontalHeader()->setStretchLastSection(true);
 	ui.m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
 	//ui.m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//设置单元格不可编辑
 	/*setFocusPolicy(Qt::StrongFocus);
 	this->grabKeyboard();*/
@@ -92,6 +93,7 @@ void Qt_Excel::UpdataWidget()
 void Qt_Excel::ShowExcel()
 {
 	disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.m_tableWidget, SLOT(resizeRowsToContents()));
+	  
 	//disconnect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChanged(QTableWidgetItem*)));
 	ui.m_tableWidget->clearSpans();		//清空所有的合并
 	ui.m_tableWidget->clear();
@@ -116,9 +118,9 @@ void Qt_Excel::ShowExcel()
 			ui.m_tableWidget->item(i, j)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			//ui.m_tableWidget->item(i, j)->setFlags(ui.m_tableWidget->item(i, j)->flags() & (~Qt::ItemIsEditable));
 		}
-
 	connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), ui.m_tableWidget, SLOT(resizeRowsToContents()));
-	//ui.m_tableWidget->resizeRowsToContents();
+
+	ui.m_tableWidget->resizeRowsToContents();
 	//connect(ui.m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(callback_itemChanged(QTableWidgetItem*)));
 }
 
@@ -128,31 +130,40 @@ void Qt_Excel::ShowExcel()
 //	ui.m_label_desc->setMaximumSize(QSize(0, 0));
 //}
 
-void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
-{
-	m_iLastSelectRow = item->row();
-	m_iLastSelectCol = item->column();
-	//cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
-	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
-	ui.m_textEdit->setFocus();
-	QTextCursor cursor = ui.m_textEdit->textCursor();
-	cursor.movePosition(QTextCursor::End);
-	ui.m_textEdit->setTextCursor(cursor);
-}
+//void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
+//{
+//	m_iLastSelectRow = item->row();
+//	m_iLastSelectCol = item->column();
+//	//cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
+//	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
+//	ui.m_textEdit->setFocus();
+//	QTextCursor cursor = ui.m_textEdit->textCursor();
+//	cursor.movePosition(QTextCursor::End);
+//	ui.m_textEdit->setTextCursor(cursor);
+//}
 
-void Qt_Excel::callback_textChanged()
+//void Qt_Excel::callback_textChanged()
+//{
+//	if (ui.m_tableWidget->rowCount() == 0)
+//		return;
+//	auto str = ui.m_textEdit->document()->toPlainText();
+//	if (m_iLastSelectCol < 0 || m_iLastSelectCol >= m_outExcel.m_vecHeaderLabels.size())
+//	{
+//		string str_log = (boost::format("当前修改的第%d行,第%d列,但是当前软件并没有维护到该列") % m_iLastSelectRow % m_iLastSelectCol).str();
+//		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+//		return;
+//	}
+//	ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->setText(str);
+//	m_outExcel.m_vecData[m_iLastSelectRow][m_iLastSelectCol] = str.toLocal8Bit().data();
+//}
+
+void Qt_Excel::callback_itemDoubleClicked(QTableWidgetItem* item)
 {
-	if (ui.m_tableWidget->rowCount() == 0)
-		return;
-	auto str = ui.m_textEdit->document()->toPlainText();
-	if (m_iLastSelectCol < 0 || m_iLastSelectCol >= m_outExcel.m_vecHeaderLabels.size())
-	{
-		string str_log = (boost::format("当前修改的第%d行,第%d列,但是当前软件并没有维护到该列") % m_iLastSelectRow % m_iLastSelectCol).str();
-		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
-		return;
-	}
-	ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->setText(str);
-	m_outExcel.m_vecData[m_iLastSelectRow][m_iLastSelectCol] = str.toLocal8Bit().data();
+	int row = item->row();
+	int col = item->column();
+	string str_current_text = item->text().toLocal8Bit().data();
+	CMyTextEdit* p_text = new CMyTextEdit(this, m_outExcel.m_vecData[row][col], str_current_text); //.m_vecData[m_iLastRow][m_iLastCol], this, BurnRule);
+	ui.m_tableWidget->setCellWidget(row, col, p_text);
 }
 
 //void Qt_Excel::callback_itemSelectionChanged()

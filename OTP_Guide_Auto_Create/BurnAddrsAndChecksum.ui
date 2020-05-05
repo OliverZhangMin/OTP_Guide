@@ -17,26 +17,26 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QTableWidget" name="m_tableWidget">
+      <widget class="QScrollArea" name="m_BurnAddrScrollArea">
        <property name="maximumSize">
         <size>
          <width>16777215</width>
          <height>200</height>
         </size>
        </property>
-       <attribute name="horizontalHeaderStretchLastSection">
+       <property name="widgetResizable">
         <bool>true</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>烧录开始地址</string>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1043</width>
+          <height>198</height>
+         </rect>
         </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>烧录结束地址</string>
-        </property>
-       </column>
+       </widget>
       </widget>
      </item>
      <item>
@@ -85,22 +85,6 @@
     <hint type="destinationlabel">
      <x>691</x>
      <y>357</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_tableWidget</sender>
-   <signal>itemClicked(QTableWidgetItem*)</signal>
-   <receiver>BurnAddrsAndChecksum</receiver>
-   <slot>callback_ItemClicked(QTableWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>51</x>
-     <y>321</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>9</x>
-     <y>390</y>
     </hint>
    </hints>
   </connection>

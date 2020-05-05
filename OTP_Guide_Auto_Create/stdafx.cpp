@@ -62,6 +62,23 @@ string wstring2string(wstring wstr)
 	return result;
 }
 
+CMyTextEdit::CMyTextEdit(CMyWidgetBase* p_base,string& str_source, const string& init_str) :m_pBase(p_base),m_strText(str_source)
+{
+	setText(QString::fromLocal8Bit(init_str.c_str()));
+	connect(this, SIGNAL(textChanged()), this, SLOT(callback_MyTextEditTextChanged()));
+}
+
+void CMyTextEdit::callback_MyTextEditTextChanged()
+{
+	m_strText = this->document()->toPlainText().toLocal8Bit().data();
+}
+
+void CMyTextEdit::focusOutEvent(QFocusEvent *event)
+{
+	m_pBase->ShowExcel();
+	this->destroy(true);
+}
+
 bool GetJsonByExcelProp(Json::Value& js, const ExcelProp& prop)
 {
 	Json::Value js_project_info;		//项目信息总数据
@@ -266,5 +283,9 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 
 	//获取修改历史
 	GetExcelPropByJson(root["修改历史"], out.m_vecChangeHistroy);
+
+	/*--------------将用户配置的地址的描述信息载入*/
+	out.m_EEPROMAddrExcel.GetInfoByJson(root["EEPROM映射表信息"]);
+	/*--------------将用户配置的地址的描述信息载入--<*/
 	return true;
 }

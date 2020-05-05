@@ -8,4 +8,5 @@ public:
 	{
 	}
 	virtual void UpdataWidget() = 0;  //更新UI界面
+	virtual void ShowExcel() {};
 };

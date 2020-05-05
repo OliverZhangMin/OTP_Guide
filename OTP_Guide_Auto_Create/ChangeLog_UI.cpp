@@ -36,7 +36,18 @@ void ChangeLog_UI::callback_itemDoubleClicked(QTableWidgetItem* item)
 {
 	int row = item->row();
 	int col = item->column();
-	int can_alter_row = ui.m_tableWidget->rowCount() - 1;
+	if (col == 2)
+	{
+		auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		struct tm* ptm = localtime(&tt);
+		m_outExcel.m_vecData[row][col] = (boost::format("%d/%d/%d") % (ptm->tm_year + 1900) % (ptm->tm_mon + 1) % (ptm->tm_mday)).str();
+		ShowExcel();
+	}
+	else
+	{
+		Qt_Excel::callback_itemDoubleClicked(item);
+	}
+	/*int can_alter_row = ui.m_tableWidget->rowCount() - 1;
 	if (row == can_alter_row)
 	{
 		if (col == 2)
@@ -46,5 +57,5 @@ void ChangeLog_UI::callback_itemDoubleClicked(QTableWidgetItem* item)
 			m_outExcel.m_vecData[row][col] = (boost::format("%d/%d/%d")%(ptm->tm_year + 1900) %(ptm->tm_mon + 1) %(ptm->tm_mday)).str();
 			ShowExcel();
 		}
-	}
+	}*/
 }

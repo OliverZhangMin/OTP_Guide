@@ -19,8 +19,8 @@
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>110</y>
+     <x>10</x>
+     <y>100</y>
      <width>1051</width>
      <height>901</height>
     </rect>
@@ -237,6 +237,29 @@
       <height>21</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QScrollArea" name="m_ElashScrollArea">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>10</y>
+      <width>391</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>389</width>
+       <height>179</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

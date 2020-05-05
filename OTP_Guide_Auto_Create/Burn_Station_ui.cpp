@@ -35,35 +35,35 @@ void Burn_Station_ui::ShowExcel()
 	}
 }
 
-void Burn_Station_ui::callback_textChanged()
-{
-	Qt_Excel::callback_textChanged();
-	/*string str = ui.m_textEdit->document()->toPlainText().toLocal8Bit().data();
-	if (!IsHex(str))
-	{
-		if (str == "0x")
-		{
-			Qt_Excel::callback_textChanged();
-			return;
-		}
-		else
-		{
-			string str_log = (boost::format("%s[ERROR]:输入的必须是像0x1B这样的16进制字符串") % __FUNCTION__).str();
-			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
-			ui.m_textEdit->setText("0x");
-			ui.m_textEdit->setFocus();
-			QTextCursor cursor = ui.m_textEdit->textCursor();
-			cursor.movePosition(QTextCursor::End);
-			ui.m_textEdit->setTextCursor(cursor);
-			return;
-		}
-	}
-	else
-	{
-		Qt_Excel::callback_textChanged();
-	}*/
-	ShowExcel();
-}
+//void Burn_Station_ui::callback_textChanged()
+//{
+//	Qt_Excel::callback_textChanged();
+//	/*string str = ui.m_textEdit->document()->toPlainText().toLocal8Bit().data();
+//	if (!IsHex(str))
+//	{
+//		if (str == "0x")
+//		{
+//			Qt_Excel::callback_textChanged();
+//			return;
+//		}
+//		else
+//		{
+//			string str_log = (boost::format("%s[ERROR]:输入的必须是像0x1B这样的16进制字符串") % __FUNCTION__).str();
+//			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+//			ui.m_textEdit->setText("0x");
+//			ui.m_textEdit->setFocus();
+//			QTextCursor cursor = ui.m_textEdit->textCursor();
+//			cursor.movePosition(QTextCursor::End);
+//			ui.m_textEdit->setTextCursor(cursor);
+//			return;
+//		}
+//	}
+//	else
+//	{
+//		Qt_Excel::callback_textChanged();
+//	}*/
+//	ShowExcel();
+//}
 
 bool Burn_Station_ui::InsertOneRow()
 {

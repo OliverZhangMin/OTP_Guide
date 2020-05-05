@@ -14,6 +14,6 @@ protected:
 	virtual void ShowExcel() override;
 	virtual bool InsertOneRow() override;
 protected slots :
-	virtual void callback_textChanged() override;
+	//virtual void callback_textChanged() override;
 };
 

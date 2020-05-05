@@ -72,8 +72,43 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemDoubleClicked(QTableWidgetItem*)</signal>
+   <receiver>EEPROM_Addr_Map</receiver>
+   <slot>callback_ItemDoubleClicked(QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>480</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>91</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</signal>
+   <receiver>EEPROM_Addr_Map</receiver>
+   <slot>callback_CurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>82</x>
+     <y>651</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>264</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>callback_AddrsItemChanged(QTableWidgetItem*)</slot>
+  <slot>callback_ItemDoubleClicked(QTableWidgetItem*)</slot>
+  <slot>callback_CurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
  </slots>
 </ui>

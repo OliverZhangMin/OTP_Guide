@@ -18,16 +18,6 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTextEdit" name="m_textEdit">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>150</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QTableWidget" name="m_tableWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -70,22 +60,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>m_textEdit</sender>
-   <signal>textChanged()</signal>
-   <receiver>Qt_Excel</receiver>
-   <slot>callback_textChanged()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>46</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>63</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>m_tableWidget</sender>
    <signal>itemClicked(QTableWidgetItem*)</signal>
    <receiver>Qt_Excel</receiver>
@@ -117,11 +91,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_tableWidget</sender>
+   <signal>currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</signal>
+   <receiver>Qt_Excel</receiver>
+   <slot>callback_currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>79</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>callback_itemClicked(QTableWidgetItem*)</slot>
   <slot>callback_textChanged()</slot>
   <slot>callback_GuideTestItemDescTextChanged()</slot>
   <slot>callback_itemDoubleClicked(QTableWidgetItem*)</slot>
+  <slot>callback_currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)</slot>
  </slots>
 </ui>
