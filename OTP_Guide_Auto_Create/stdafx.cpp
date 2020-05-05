@@ -1,4 +1,9 @@
 #include "stdafx.h"
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/device/file.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+
+string m_strParseLog;
 
 bool IsHex(const string& str)
 {
@@ -155,14 +160,15 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 	Json::Value& js_eeprom_init = root["EEPROM初始化"];
 	if (!js_eeprom_init.isNull())
 	{
-		out.m_eepromInfo.m_str_eeprom_slaveid     = js_eeprom_init["eeprom_slaveid"].asString();
+		out.m_eepromInfo.GetInfoByJson(js_eeprom_init);
+		/*out.m_eepromInfo.m_str_eeprom_slaveid     = js_eeprom_init["eeprom_slaveid"].asString();
 		out.m_eepromInfo.m_str_sensor_slaveid     = js_eeprom_init["sensor_slaveid"].asString();
 		out.m_eepromInfo.m_str_DefaultVal         = js_eeprom_init["烧录默认值"].asString();
 		out.m_eepromInfo.m_str_ProtectIICMode	  = js_eeprom_init["写保护IIC模式"].asString();
 		out.m_eepromInfo.m_str_protect_slaveid    = js_eeprom_init["写保护slaveid"].asString();
 		out.m_eepromInfo.m_str_protectAddr	      = js_eeprom_init["写保护寄存器"].asString();
 		out.m_eepromInfo.m_bProtectEnable		  = js_eeprom_init["写保护开关"].asBool();
-		out.m_eepromInfo.m_str_protectVal	      = js_eeprom_init["写保护值"].asString();
+		out.m_eepromInfo.m_str_protectVal	      = js_eeprom_init["写保护值"].asString();*/
 	}
 
 	Json::Value& js_burn_station_addr = root["烧录站别地址"];
@@ -187,19 +193,19 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 		}
 	}
 
-	Json::Value& js_BurnStationCheckSumModule = root["烧录站别配置的Checksum模块"];
-	if (!js_BurnStationCheckSumModule.isNull())
-	{
-		//先获取站别名
-		auto vec_names = js_BurnStationCheckSumModule.getMemberNames();
-		//在把每个站别下的模块填充到数据结构
-		for (const auto& name : vec_names)
-		{
-			Json::Value& js_station_name = js_BurnStationCheckSumModule[name];
-			for (int i = 0; i < js_station_name.size(); i++)
-				out.m_mapStationInfo[name].m_VecNeedChecksumName.push_back(js_station_name[i].asString());
-		}
-	}
+	//Json::Value& js_BurnStationCheckSumModule = root["烧录站别配置的Checksum模块"];
+	//if (!js_BurnStationCheckSumModule.isNull())
+	//{
+	//	//先获取站别名
+	//	auto vec_names = js_BurnStationCheckSumModule.getMemberNames();
+	//	//在把每个站别下的模块填充到数据结构
+	//	for (const auto& name : vec_names)
+	//	{
+	//		Json::Value& js_station_name = js_BurnStationCheckSumModule[name];
+	//		for (int i = 0; i < js_station_name.size(); i++)
+	//			out.m_mapStationInfo[name].m_VecNeedChecksumName.push_back(js_station_name[i].asString());
+	//	}
+	//}
 
 	//Json::Value& js_BurnStationBurnModule = root["已配置烧录站的模块"];
 	//if (!js_BurnStationBurnModule.isNull())
@@ -288,4 +294,66 @@ bool GetOTPGuideConfigByJsonFile(OTPGuideInfo& out)
 	out.m_EEPROMAddrExcel.GetInfoByJson(root["EEPROM映射表信息"]);
 	/*--------------将用户配置的地址的描述信息载入--<*/
 	return true;
+}
+
+bool GetJsonStringMap(map<int, string>& out_map)
+{
+	boost::iostreams::file_source file_json0("./JsonVirtualData0.txt", ios::binary | ios::in);
+	if (!file_json0.is_open())
+	{
+		string str_log = (boost::format("%s[ERROR]:打开文件JsonVirtualData0.txt失败")%__FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return false;
+	}
+
+	boost::iostreams::file_source file_json1("./JsonVirtualData1.txt", ios::binary | ios::in);
+	if (!file_json1.is_open())
+	{
+		string str_log = (boost::format("%s[ERROR]:打开文件JsonVirtualData1.txt失败") % __FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return false;
+	}
+	boost::iostreams::copy(file_json0, boost::iostreams::back_inserter(out_map[0]));
+	boost::iostreams::copy(file_json1, boost::iostreams::back_inserter(out_map[1]));
+	return true;
+}
+
+bool BatchReadFile(void* ptr, const size_t& slaveid, const size_t& start, const size_t& end, std::map<size_t, size_t>& out_map, string& log)
+{
+	//out.clear();
+	ifstream read_eeprom("EEPROM.txt", ios::binary | ios::in);
+	if (!read_eeprom.is_open())
+	{
+		string str_log = (boost::format("%s[ERROR]:打开EEPROM.txt文件失败") % __FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return false;
+	}
+	stringstream os;
+	os << read_eeprom.rdbuf();
+	read_eeprom.close();
+
+	string line = "";
+	int addr = 0, value = 0, line_index = 0;;
+	string left = "", right = "";
+	while (getline(os, line))
+	{
+		if (line_index >= start && line_index <= end)
+		{
+			left = line.substr(0, line.find('='));
+			right = line.substr(line.find('=') + 1, line.length());
+			sscanf_s(left.c_str(), "%x", &addr);
+			sscanf_s(right.c_str(), "%x", &value);
+			out_map[addr] = value;
+			line_index++;
+		}
+		else
+			line_index++;
+	}
+	return true;
+}
+
+void GetEEPROMParse_Log(void* ptr, const char* log)
+{
+	m_strParseLog.clear();
+	m_strParseLog.assign(log);
 }

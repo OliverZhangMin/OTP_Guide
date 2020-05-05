@@ -19,6 +19,7 @@ TestItemContainer_UI::TestItemContainer_UI(OTPGuideInfo& guide_info,QWidget *par
 	m_pTestItemContainertMenu->addAction(p_DeleteTestItem);
 	connect(p_DeleteTestItem, &QAction::triggered, this, &TestItemContainer_UI::DeleteTestItem);
 	
+	UpdataWidget();
 }
 
 TestItemContainer_UI::~TestItemContainer_UI()

@@ -96,11 +96,28 @@ Json::Value EEPROM_InitInfo::ToJsonConfig()
 	js_eeprom_init["写保护寄存器"] = m_str_protectAddr;
 	js_eeprom_init["写保护值"] = m_str_protectVal;
 	js_eeprom_init["写保护IIC模式"] = m_str_ProtectIICMode;
+
+	//EFlash
+	Json::Value js_EFlash;
+	GetJsonByExcelProp(js_EFlash, m_EFlashExcel);
+	js_eeprom_init["EFlash"] = js_EFlash;
+
 	return js_eeprom_init;
 	//all_save_json["EEPROM初始化"] = js_eeprom_init;
 }
 
 void EEPROM_InitInfo::GetInfoByJson(const Json::Value& js)
 {
-
+	if (!js.isNull())
+	{
+		m_str_eeprom_slaveid  = js["eeprom_slaveid"].asString();
+		m_str_sensor_slaveid  = js["sensor_slaveid"].asString();
+		m_str_DefaultVal	  = js["烧录默认值"].asString();
+		m_bProtectEnable	  = js["写保护开关"].asBool();
+		m_str_protect_slaveid = js["写保护slaveid"].asString();
+		m_str_protectAddr	  = js["写保护寄存器"].asString();
+		m_str_protectVal	  = js["写保护值"].asString();
+		m_str_ProtectIICMode  = js["写保护IIC模式"].asString();
+		GetExcelPropByJson(js["EFlash"], m_EFlashExcel);
+	}
 }

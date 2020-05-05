@@ -32,7 +32,11 @@ struct ExcelProp
 	vector<string> m_vecHeaderLabels;
 	vector<vector<string>> m_vecData;
 
-
+	void clear()
+	{
+		//m_vecHeaderLabels.clear();
+		m_vecData.clear();
+	}
 	friend class boost::serialization::access;
 	template <typename Archive> void serialize(Archive &ar, const unsigned int version) {
 		ar & m_vecHeaderLabels;
@@ -155,7 +159,7 @@ public:
 struct m_mapStationInfo
 {
 	vector<string> m_VecNeedBurnName;
-	vector<string> m_VecNeedChecksumName;
+	//vector<string> m_VecNeedChecksumName;
 	ExcelProp m_BurnAddrsExcel;
 };
 

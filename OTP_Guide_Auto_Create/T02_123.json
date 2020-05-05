@@ -1,40 +1,4 @@
 {
-	"LSC" : 
-	{
-		"BurnData" : 
-		[
-			{
-				"data" : "0.cct_u_v_ev.ev",
-				"length" : 2,
-				"outconvert" : "HL",
-				"start" : "0x4"
-			}
-		],
-		"CheckSum" : 
-		{
-			"BurnRange" : 
-			[
-				{
-					"end" : "0x5",
-					"start" : "0x4"
-				}
-			],
-			"CheckSumType" : 2,
-			"CheckSum_Addr" : 
-			[
-				"0x6",
-				"0x7"
-			],
-			"ReadRange" : null,
-			"UsedRange" : 
-			[
-				{
-					"end" : "0x5",
-					"start" : "0x4"
-				}
-			]
-		}
-	},
 	"init" : 
 	{
 		"BurnRange" : 

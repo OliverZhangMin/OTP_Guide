@@ -32,7 +32,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>1043</width>
+          <width>1038</width>
           <height>198</height>
          </rect>
         </property>
@@ -104,11 +104,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_ChecksumConfigtabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>BurnAddrsAndChecksum</receiver>
+   <slot>callback_CheckSumTableCurrentChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>48</x>
+     <y>642</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>8</x>
+     <y>687</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>callback_BurnAddrWidgetItemChanged(QTableWidgetItem*)</slot>
   <slot>callback_ChecksumConfigcustomContextMenuRequested(QPoint)</slot>
   <slot>callback_ItemClicked(QTableWidgetItem*)</slot>
   <slot>callback_BurnItemCustomContextMenuRequested(QPoint)</slot>
+  <slot>callback_CheckSumTableCurrentChanged(int)</slot>
  </slots>
 </ui>

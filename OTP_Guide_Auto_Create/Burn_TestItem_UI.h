@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 #include <boost/algorithm/string.hpp>
-
+using namespace std;
 class Ini_GuideTemplateNames
 {
 public:

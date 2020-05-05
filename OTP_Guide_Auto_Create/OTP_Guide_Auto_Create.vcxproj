@@ -43,6 +43,10 @@
     <IncludePath>D:\opencv-3.3.0-soure\build\include;../include;D:\boost_1_70_0;./json;$(IncludePath)</IncludePath>
     <LibraryPath>D:\boost_1_70_0_MSVC-14.0_static\lib;D:\opencv_3.3.0_VS2015\lib\Debug;./json;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>D:\opencv-3.3.0-soure\build\include;./json;D:\boost_1_70_0;../include;./;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\boost_1_70_0_MSVC-14.0_static\lib;./json;D:\opencv_3.3.0_VS2015\lib\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
@@ -51,7 +55,7 @@
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QtInstall>msvc2013</QtInstall>
+    <QtInstall>msvc2015</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -72,7 +76,7 @@
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world330d.lib;lib_jsond.lib;OTPWriterd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world330d.lib;lib_jsond.lib;OTPWriterd.lib;EEPROM_ParseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -81,14 +85,19 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>lib_json.lib;opencv_world330.lib;EEPROM_Parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\OTPGuideDataStruct.cpp" />
     <ClCompile Include="BurnAddrsAndChecksum.cpp" />
     <ClCompile Include="BurnRule_UI.cpp" />
     <ClCompile Include="Burn_Station_ui.cpp" />
@@ -103,11 +112,13 @@
     <ClCompile Include="EEPROM_INIT.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="HexCheckExcel.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="OTP_Guide_Auto_Create.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ProjectInformation_UI.cpp" />
     <ClCompile Include="Qt_Excel.cpp" />
@@ -152,9 +163,11 @@
     <QtMoc Include="ChangeLog_UI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </QtMoc>
+    <QtMoc Include="HexCheckExcel.h" />
+    <ClInclude Include="CEEPROMParse.h" />
     <ClInclude Include="MyWidgetBase.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="stdafx.h" />
+    <QtMoc Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OTPWriter.rc" />

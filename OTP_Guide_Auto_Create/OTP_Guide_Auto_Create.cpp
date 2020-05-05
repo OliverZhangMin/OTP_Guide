@@ -2,15 +2,27 @@
 #include "OTP_Guide_Auto_Create.h"
 #include <Windows.h>
 #include "OTPGuidePDFWriter.h"
-
 #include "EEPROM_Addr_Map.h"
 #include "EEPROM_INIT.h"
 #include "ProjectInformation_UI.h"
 #include "TestItemContainer_UI.h"
 #include "ChangeLog_UI.h"
+#include "CEEPROMParse.h"
+
+extern string m_strParseLog;
+MapSerialization<int, string> g_VirtualDataSource;
+
 OTP_Guide_Auto_Create::OTP_Guide_Auto_Create(QWidget *parent)
 	: QMainWindow(parent)
 {
+	//根据虚拟数据文件,填充到数据结构
+	if (!GetJsonStringMap(g_VirtualDataSource))
+	{
+		string str_log = (boost::format("%s[ERROR]:从虚拟文件中获取数据s失败") % __FUNCTION__).str();
+		QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+		return;
+	}
+
 	QToolBar* toolBar = new QToolBar(this);
 	QAction* SaveGuideAction = new QAction(QString::fromLocal8Bit("生成guide"), this);
 	toolBar->addAction(SaveGuideAction);
@@ -87,19 +99,18 @@ void OTP_Guide_Auto_Create::SaveConfig()
 		//*--------------烧录站别的地址--<*/
 
 		/*--------------烧录站别要烧录的模块*/
-
 		Json::Value js_modules;
 		for (const auto& burn_name : stations.second.m_VecNeedBurnName)
 			js_modules.append(burn_name);
 		js_BurnStationModule[stations.first] = js_modules;
 		/*--------------烧录站别要烧录的模块--<*/
 
-		/*--------------烧录站别要选择的Checksum模块*/
-		Json::Value js_CheckSumModules;
-		for (const auto& name : stations.second.m_VecNeedChecksumName)
-			js_CheckSumModules.append(name);
-		js_BurnStationCheckSumModule[stations.first] = js_CheckSumModules;
-		/*--------------烧录站别要选择的Checksum模块--<*/
+		///*--------------烧录站别要选择的Checksum模块*/
+		//Json::Value js_CheckSumModules;
+		//for (const auto& name : stations.second.m_VecNeedChecksumName)
+		//	js_CheckSumModules.append(name);
+		//js_BurnStationCheckSumModule[stations.first] = js_CheckSumModules;
+		///*--------------烧录站别要选择的Checksum模块--<*/
 	}
 	all_save_json["烧录站别的模块"] = js_BurnStationModule;
 	all_save_json["烧录站别配置的Checksum模块"] = js_BurnStationCheckSumModule;
@@ -268,8 +279,51 @@ void OTP_Guide_Auto_Create::SaveBurnJsonFile()
 		ofstream ofile(str_file, ios::binary | ios::out);
 		ofile << os.str();
 		ofile.close();
-	}
 
+		//根据虚拟数据,生成烧录数据
+		string str_json_buff = os.str();
+		boost::replace_all(str_json_buff," ", "");
+
+		ostringstream os_map;
+		g_VirtualDataSource.serialization(os_map);
+		string str_os_map = os_map.str();
+		try
+		{
+			CEEPROMParse_Prop prop;
+			prop.m_bCheckProjectName = false;
+			prop.m_bEEPROMTool = true;
+			prop.m_strJsonFileBuffer = str_json_buff;
+			//初始化
+			if (!EEPROM_PROP_INIT(prop))
+			{
+				string str_log = (boost::format("%s[ERROR]:解析模块初始化失败") % __FUNCTION__).str();
+				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+				return;
+			}
+			//设置回调函数
+			SetIIC_CALLBACK(this, BatchReadFile, nullptr, nullptr);
+			//给数据进行解析
+			if (!Parse(str_os_map.c_str()))
+			{
+				GetLog(this, GetEEPROMParse_Log);
+				string str_log = (boost::format("%s[ERROR]:%s烧录站别,解析错误,错误信息:%s") % __FUNCTION__%json.first %m_strParseLog).str();
+				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+				return;
+			}
+			else
+			{
+				string str_log = (boost::format("%s[INFO]:%s烧录站,烧录解析成功") % __FUNCTION__ %json.first).str();
+				QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			}
+		}
+		catch (const exception& ex)
+		{
+			GetLog(this, GetEEPROMParse_Log);
+			string str_log = (boost::format("%s[ERROR]:解析出现异常,异常信息为:%s,解析信息为:%s") % __FUNCTION__ %ex.what()  %m_strParseLog).str();
+			QMessageBox::information(NULL, QString::fromLocal8Bit("错误"), QString::fromLocal8Bit(str_log.c_str()), QMessageBox::Yes, QMessageBox::Yes);
+			return;
+		}
+	}
 }
 
 void OTP_Guide_Auto_Create::callback_GenerateOTPGuide()

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <QComboBox>
+using namespace std;
 struct BurnItem;
 
 class ChecksumConfigurate_ui : public CMyWidgetBase

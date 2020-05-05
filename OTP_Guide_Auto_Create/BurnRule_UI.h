@@ -7,8 +7,9 @@
 #include <map>
 #include <json.h>
 #include<QComboBox>
+#include "OTPGuideDataStruct.h"
 
-struct BurnItem;
+//struct BurnItem;
 
 enum UI_TYPE
 {

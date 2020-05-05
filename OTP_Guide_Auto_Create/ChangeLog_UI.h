@@ -2,6 +2,7 @@
 #include "Qt_Excel.h"
 
 struct ExcelProp;
+struct OTPGuideInfo;
 
 class ChangeLog_UI :
 	public Qt_Excel

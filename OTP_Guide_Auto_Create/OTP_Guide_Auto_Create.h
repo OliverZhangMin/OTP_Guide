@@ -1,12 +1,13 @@
 #pragma once
-
+#include "OTPGuideDataStruct.h"
 #include <QtWidgets/QMainWindow>
+#include "MyWidgetBase.h"
 #include "ui_OTP_Guide_Auto_Create.h"
 #include <memory>
 #include <string>
 #include <map>
 
-struct OTPGuideInfo;
+//struct OTPGuideInfo;
 
 class OTP_Guide_Auto_Create : public QMainWindow
 {

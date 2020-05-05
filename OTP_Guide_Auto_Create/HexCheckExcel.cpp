@@ -4,6 +4,7 @@
 
 CHexCheckExcel::CHexCheckExcel(ExcelProp& excel, QWidget *parent) :Qt_Excel(excel)
 {
+	ShowExcel();
 }
 
 

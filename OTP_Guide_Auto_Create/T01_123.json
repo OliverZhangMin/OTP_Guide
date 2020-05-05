@@ -1,40 +1,4 @@
 {
-	"AWB" : 
-	{
-		"BurnData" : 
-		[
-			{
-				"data" : "0.af_code.far_code",
-				"length" : 2,
-				"outconvert" : "HL",
-				"start" : "0x0"
-			}
-		],
-		"CheckSum" : 
-		{
-			"BurnRange" : 
-			[
-				{
-					"end" : "0x1",
-					"start" : "0x0"
-				}
-			],
-			"CheckSumType" : 1,
-			"CheckSum_Addr" : 
-			[
-				"0x2",
-				"0x3"
-			],
-			"ReadRange" : null,
-			"UsedRange" : 
-			[
-				{
-					"end" : "0x1",
-					"start" : "0x0"
-				}
-			]
-		}
-	},
 	"init" : 
 	{
 		"BurnRange" : 

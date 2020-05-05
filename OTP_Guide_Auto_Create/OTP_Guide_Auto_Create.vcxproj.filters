@@ -67,10 +67,10 @@
     <ClCompile Include="ChangeLog_UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\OTPGuideDataStruct.cpp">
+    <ClCompile Include="HexCheckExcel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HexCheckExcel.cpp">
+    <ClCompile Include="..\include\OTPGuideDataStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -111,10 +111,10 @@
     <QtMoc Include="ChangeLog_UI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="stdafx.h">
+    <QtMoc Include="HexCheckExcel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="HexCheckExcel.h">
+    <QtMoc Include="stdafx.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -160,6 +160,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CEEPROMParse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

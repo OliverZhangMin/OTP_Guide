@@ -5,11 +5,13 @@
 #include "EEPROM_INIT.h"
 #include<vector>
 #include<string>
+#include "OTPGuideDataStruct.h"
+#include <QTableWidgetItem>
 
-struct OTPGuideInfo;
-struct BurnItem;
-class EEPROM_INIT;
-
+//struct OTPGuideInfo;
+//struct BurnItem;
+//class EEPROM_INIT;
+using namespace std;
 
 class BurnAddrsAndChecksum : public CMyWidgetBase
 {
@@ -21,6 +23,8 @@ public:
 	virtual void UpdataWidget() override;  //更新UI界面
 	//void ShowExcel();
 	Ui::BurnAddrsAndChecksum ui;
+	void AddCheckSumTabByAlgoName(const string& str);
+	void RemoveCheckSumTabByAlgoName(const string& str);
 protected:
 	//virtual void keyPressEvent(QKeyEvent * k);
 private:
@@ -29,7 +33,7 @@ private:
 	//Qt_Excel& m_BurnExcel;
 	//std::vector<std::vector<std::string>> m_vecBurnAddrs;
 	OTPGuideInfo& m_GuideInfo;
-	QMenu* m_pMenuCheckSumConfig = nullptr;
+	//QMenu* m_pMenuCheckSumConfig = nullptr;
 	QMenu* m_pMenuBurnItem = nullptr;
 	EEPROM_INIT* m_pInitWidget = nullptr;
 	int m_iLastSelectRow = -1;
@@ -37,9 +41,9 @@ private:
 	//bool InsertOneRow();
 private slots:
 	//void callback_BurnAddrWidgetItemChanged(QTableWidgetItem*);
-	void callback_DeleteCurrentCheckSumConfig();				//删除当前选中的chekcsum配置界面
-	void callback_ChecksumConfigcustomContextMenuRequested(QPoint);
-
+	//void callback_DeleteCurrentCheckSumConfig();				//删除当前选中的chekcsum配置界面
+	//void callback_ChecksumConfigcustomContextMenuRequested(QPoint);
+	void callback_CheckSumTableCurrentChanged(int);
 	void callback_DeleteBurnItem();				
 	void callback_BurnItemCustomContextMenuRequested(QPoint);	//当站需要烧录的模块列表框,右键菜单
 	void callback_ItemClicked(QTableWidgetItem*);
