@@ -130,17 +130,17 @@ void Qt_Excel::ShowExcel()
 //	ui.m_label_desc->setMaximumSize(QSize(0, 0));
 //}
 
-//void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
-//{
-//	m_iLastSelectRow = item->row();
-//	m_iLastSelectCol = item->column();
-//	//cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
-//	ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
-//	ui.m_textEdit->setFocus();
-//	QTextCursor cursor = ui.m_textEdit->textCursor();
-//	cursor.movePosition(QTextCursor::End);
-//	ui.m_textEdit->setTextCursor(cursor);
-//}
+void Qt_Excel::callback_itemClicked(QTableWidgetItem* item) 
+{
+	m_iLastSelectRow = item->row();
+	m_iLastSelectCol = item->column();
+	//cout << "row-:" << m_iLastSelectRow << ",col- = " << m_iLastSelectCol << endl;
+	/*ui.m_textEdit->setText(ui.m_tableWidget->item(m_iLastSelectRow, m_iLastSelectCol)->text());
+	ui.m_textEdit->setFocus();
+	QTextCursor cursor = ui.m_textEdit->textCursor();
+	cursor.movePosition(QTextCursor::End);
+	ui.m_textEdit->setTextCursor(cursor);*/
+}
 
 //void Qt_Excel::callback_textChanged()
 //{

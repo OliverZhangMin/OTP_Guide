@@ -28,7 +28,7 @@ protected:
 	//void HideTextDesc();
 protected slots :
 	virtual void callback_itemDoubleClicked(QTableWidgetItem*);
-	//virtual void callback_itemClicked(QTableWidgetItem*);
+	virtual void callback_itemClicked(QTableWidgetItem*);
 	//virtual void callback_textChanged();
 	//virtual void callback_itemSelectionChanged();
 	//virtual void callback_cellClicked(int row, int col);
